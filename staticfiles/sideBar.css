@@ -1,0 +1,81 @@
+.page {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sideBar {
+  width: 18%;
+  min-height: 90vh;
+  /* padding: 2.5vh 1%; */
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: 0.4s ease;
+  background: white;
+  background: #0d0c22;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.sideBar,.sideBar.change{
+  z-index: 1000;
+}
+
+
+
+#sideBar_tag {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+  z-index: 50;
+  color: white;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.sideBar strong {
+  font-size: 1.5rem;
+  color: wheat;
+}
+
+.main.change {
+  display: flex;
+  width: 95%;
+}
+
+.main {
+  transition: 0.4s ease;
+  /* overflow-x:hidden; */
+  position: relative;
+  width: 80%;
+}
+
+@media all and (max-width:1300px) {
+
+  .main,
+  .main.change {
+    width: 100%;
+  }
+
+  .sideBar,
+  .sideBar.change {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    position: fixed;
+    width: 280px;
+    padding: 5vh 10px;
+  }
+
+  .sideBar {
+    border: none;
+    left: -300px;
+  }
+
+  .sideBar.change {
+    left: 0;
+  }
+}

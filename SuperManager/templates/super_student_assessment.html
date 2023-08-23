@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Grades</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+    </header>
+    <div class="inst_box">
+      <span>Select a grade to continue</span>
+    </div>
+    <div class="grade_box">
+      {% for grade in grades %}
+      <a href="{% url 'super_get_student_assessment_page' grade.slug %}" class="grade" data-name="{{grade}}">
+        <div>
+          <small class="material-symbols-outlined">book</small>
+          {{grade}}
+        </div>
+        <p></p>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+<script>
+  const grades = document.querySelectorAll('.grade')
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

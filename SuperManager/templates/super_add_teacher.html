@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+
+      <form method="post">
+        {% csrf_token %}
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        <section>
+          <div class="con">
+            <input type="text" name="type" style="display: none;" id="in_type">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="password" placeholder="Password" required>
+          </div>
+          <div class="course_display">
+
+          </div>
+          <button type="submit">+</button>
+        </section>
+        <div class="course_box">
+          {% for course in courses %}
+          <label data-name="{{course}}" data-grade="{{course.grade}}" data-subject="{{course.subject}}">
+            <input type="checkbox" name="courses" value="{{course.id}}" id="{{course}}">
+            <div class="course_label">{{course}}</div>
+          </label>
+          {% endfor %}
+        </div>
+        <input type="text" name="name" style="display: none;">
+      </form>
+    </section>
+
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Teachers</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+      <button type="button" onclick="showForm('new')"> + Add Teacher</button>
+    </header>
+
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+
+    {% block List %}
+    <section class="student_list">
+      <div class="teacher_row" style="border-bottom: 2px dotted darkcyan; padding: 10px 0; font-weight: 600;">
+        <small>#</small>
+        <span>Username</span>
+        <span>Password</span>
+        <div class="course_list">
+          Courses
+        </div>
+        <button class="material-symbols-outlined">edit</button>
+        <button class="material-symbols-outlined">delete</button>
+      </div>
+
+      {% for teacher in teachers %}
+      <div class="teacher_row">
+        <small>{{forloop.counter}}</small>
+        <span>{{teacher}}</span>
+        <span>{{teacher.password}}</span>
+        <div class="course_list">
+          {% for course in teacher.get_courses %}
+          <small data-course="{{course.id}}">{{course}}</small>
+          {% endfor %}
+        </div>
+        <button class="material-symbols-outlined edit_student" onclick="showForm('old',event.target)"
+          data-username="{{teacher}}" data-password="{{teacher.password}}">edit</button>
+        <button class="material-symbols-outlined del_student"
+          onclick="delTeacher(event.target,'{{teacher}}')">delete</button>
+      </div>
+      {% endfor %}
+    </section>
+    {% endblock List %}
+  </section>
+</section>
+
+<style>
+  .main {
+    align-items: center !important;
+    padding: 0 !important;
+  }
+
+  .add_form form {
+    flex-direction: row;
+    border-radius: 0;
+    width: 85%;
+    justify-content: center;
+  }
+
+  .add_form form section {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .add_form form section .con {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 90%;
+  }
+
+  @media all and (max-width:800px) {
+    .add_form {
+      padding: 5vh 0;
+    }
+
+    .add_form form {
+      flex-wrap: wrap;
+    }
+
+    .course_box,
+    .add_form form section {
+      width: 95%;
+    }
+  }
+</style>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const courseList = document.querySelectorAll('.course_box label input')
+  const course_display = document.querySelector('.course_display')
+
+  fixCourseBox = (course) => {
+    var course_tile = document.createElement('div')
+    course_tile.innerHTML = course.id
+    course_tile.id = `child${course.value}`
+    if (course.checked) {
+      course_display.appendChild(course_tile)
+      anime({
+        targets: course_tile,
+        translateY: [30, 0],
+        duration: 500
+      })
+    } else {
+      var temp = document.getElementById(`child${course.value}`)
+      anime({
+        targets: temp,
+        translateY: [0, 30],
+        duration: 500,
+        opacity: [1, 0],
+        complete: () => {
+          course_display.removeChild(temp)
+        }
+      })
+    }
+  }
+
+  courseList.forEach(course => {
+    course.onclick = () => {
+      fixCourseBox(course)
+    }
+  })
+
+
+
+</script>
+
+<script>
+  const add_form = document.querySelector('.add_form')
+  const register_form = document.querySelector('.add_form form')
+  const in_type = document.getElementById('in_type')
+
+  closeForm = () => {
+    add_form.classList.remove('change')
+  }
+
+  const course_in = document.querySelectorAll('.course_box input')
+
+  showForm = (val, event) => {
+    if (val == 'new') {
+      register_form.children[2].children[0].children[1].value = ''
+      register_form.children[2].children[0].children[2].value = ''
+      in_type.value = 'new'
+    } else {
+      register_form.children[2].children[0].children[1].value = ''
+      register_form.children[2].children[0].children[2].value = ''
+      course_in.forEach(item => {
+        item.checked = false
+      })
+
+      let user_courses = [...event.parentElement.children[3].children]
+      user_courses.forEach(course => {
+        course_in.forEach(item => {
+          if (course.dataset.course === item.value) {
+            item.checked = true
+          }
+        })
+      })
+      in_type.value = 'old'
+      register_form.children[2].children[0].children[1].value = event.dataset.username
+      register_form.children[2].children[0].children[2].value = event.dataset.password
+      register_form.children[4].value = event.dataset.username
+    }
+
+    course_display.innerHTML = ''
+    courseList.forEach(course => {
+      var course_tile = document.createElement('div')
+      course_tile.innerHTML = course.id
+      course_tile.id = `child${course.value}`
+      if (course.checked) {
+        course_display.appendChild(course_tile)
+        anime({
+          targets: course_tile,
+          translateY: [30, 0],
+          duration: 500
+        })
+      }
+    })
+
+
+    add_form.classList.add('change')
+  }
+
+  const prompt_box = document.querySelector('.prompt_box')
+
+  delTeacher = (main_event, staff) => {
+    prompt_box.children[1].innerHTML = staff
+    prompt_box.classList.add('show')
+    prompt_box.children[2].onclick = (event) => {
+      if (event.target.id === 'no') {
+        prompt_box.classList.remove('show')
+      } else {
+        runAxios('super_delete_user', staff, '{{token}}')
+        main_event.parentElement.remove()
+        prompt_box.classList.remove('show')
+      }
+    }
+  }
+
+  handleData = (data) => {
+    console.log(data.data)
+  }
+</script>
+
+<script>
+  const grades = document.querySelectorAll('.grade')
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

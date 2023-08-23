@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav class="banner" style="position: relative;">
+      Notifications
+      <i class="material-symbols-outlined" onclick="clearNotes()">delete</i>
+    </nav>
+    <style>
+      .banner i {
+        position: absolute;
+        right: 30px;
+        color: tomato;
+      }
+    </style>
+
+    <section class="notification_box">
+      {% for note in note_box %}
+      <div class="note" data-id="{{note.id}}" data-con="{{note.con}}" data-type="{{note.type}}"
+        data-slug="{{note.link_slug}}">
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <i class="material-symbols-outlined">notifications</i>
+          <small style="font-size: 0.7rem;">{{note.date_published|naturaltime}}</small>
+        </div>
+        <div id="tag_up">
+          {% if note.type == 'timetable' %}
+          <span>All</span>
+          {% else %}
+          <span>{{note.course.subject}}</span>
+          {% endif %}
+          {% if note.type == 'assignment' %}
+          <i class="material-symbols-outlined">assignment</i>
+          {% elif note.type == 'quiz' %}
+          <i class="material-symbols-outlined">psychology_alt</i>
+          {% elif note.type == 'scheme' %}
+          <i class="material-symbols-outlined">inventory_2</i>
+          {% elif note.type == 'timetable' %}
+          <i class="material-symbols-outlined">date_range</i>
+          {% endif %}
+        </div>
+        <hr style="height: 100%; border-right: 3px dotted salmon;">
+        <p class="note_con" style="display: flex; align-items: center; gap: 0 1rem;">{{note.con}}</p>
+      </div>
+      {% endfor %}
+    </section>
+    <script>
+      const notes = document.querySelectorAll('.note')
+      const note_cons = document.querySelectorAll('.note_con')
+
+      notes.forEach((note, i) => {
+        note_cons[i].innerHTML = `<span>${note.dataset.con.split('|')[0]}</span> <i style='color:salmon' class="material-symbols-outlined">tips_and_updates</i>
+        <strong style='color:darkgray;font-size:1.2rem'>${note.dataset.con.split('|')[1] || '-'}</strong>
+        `
+      })
+
+      const clearNotes = () => {
+        runAxios('clear_notes')
+        note_small.innerHTML = 0
+        notes.forEach((note, i) => {
+          anime({
+            targets: note,
+            duration: 500,
+            translateX: [0, -100],
+            opacity: [1, 0],
+            delay: i * 100,
+            complete: () => {
+              note.remove()
+            }
+          })
+        })
+      }
+
+      notes.forEach(note => {
+        note.onclick = () => {
+          runAxios('toggle_note', note.dataset.id)
+          if (note.dataset.type === 'quiz') {
+            window.location.href = `student_get_quizes/${note.dataset.slug}`
+          } else if (note.dataset.type === 'assignment') {
+            window.location.href = `student_get_assignments/${note.dataset.slug}`
+          } else if (note.dataset.type === 'scheme') {
+            window.location.href = `student_get_slides_schemes/${note.dataset.slug}`
+          } else if (note.dataset.type === 'timetable') {
+            window.location.href = `${note.dataset.slug}`
+          }
+        }
+      })
+
+      handleData = (data) => {
+        console.log(data.data)
+      }
+    </script>
+    <style>
+      .notification_box {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem 0;
+        padding: 8px 0;
+      }
+
+      .notification_box .note {
+        width: 90%;
+        padding: 1.5vh 2%;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        display: flex;
+        align-items: center;
+        gap: 0 1rem;
+        position: relative;
+        cursor: pointer;
+        background: white;
+      }
+
+      .notification_box .note #tag_up,
+      .notification_box .note #tag_down {
+        position: absolute;
+        display: flex;
+        font-size: 0.8rem;
+        gap: 0 0.5rem;
+        align-items: center;
+        justify-content: center;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        background: white;
+        padding: 0 5px;
+        right: -15px;
+      }
+
+      .notification_box .note #tag_up {
+        top: -15px;
+      }
+
+      .notification_box .note #tag_down {
+        bottom: -15px;
+      }
+    </style>
+  </section>
+</section>
+{% endblock page %}
+
+{% block js %}
+
+{% endblock js %}

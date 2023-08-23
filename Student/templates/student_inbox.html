@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <section class="banner">Inbox</section>
+      <ul>
+        {% for course in grade.get_courses %}
+          <li>{{course.get_teacher.first.name}}</li> 
+        {% endfor %}
+      </ul>
+
+    INBOX
+  </section>
+</section>
+{% endblock page %}
+
+{% block js %}
+
+{% endblock js %}

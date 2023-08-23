@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="{% url 'student_quizes_page'%}">Quiz ></a>
+          <a href="{% url 'student_quizes_page'%}">Courses ></a>
+          <a href="{% url 'student_get_quizes_schemes_page' course.slug %}">Schemes :</a>
+          <a href=""><i class="material-symbols-outlined">numbers</i> {{schemes.count}}</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Course"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <header data-progress_list="{{progress_list}}">
+      {% for scheme in schemes %}
+      <a href="{% url 'student_get_quizes_page' scheme.slug %}" class="item" data-name="{{scheme.topic}}"
+        data-subject="{{scheme.topic}}">
+        <i class="material-symbols-outlined">psychology_alt</i>
+        <span>{{scheme.topic}}</span>
+        <small>{{scheme.get_quizes.count}}</small>
+        <div class="progress_box">
+          <div class="bar">
+            <div class="progress"></div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </header>
+  </section>
+</section>
+
+<script>
+  let progressList = JSON.parse(document.querySelector('.main header').dataset.progress_list)
+  const progress = document.querySelectorAll('.progress')
+
+  progressList.forEach((el,i)=>{
+    progress[i].style.width = `${el}%`
+  })
+</script>
+
+<style>
+  .item{
+    background: #0093ec;
+    color: white;
+  }
+  .progress{
+    background: rgb(6, 225, 116);
+  }
+</style>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  let items = document.querySelectorAll('.item')
+</script>
+<script src="{% static 'Student/student.js' %}"></script>
+{% endblock js %}

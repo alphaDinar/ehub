@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/assessment.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <span>Semester Report</span>
+      </div>
+    </nav>
+    <section class="report_box">
+      {% for course in grade.get_courses %}
+      <div class="course_ul" data-course="{{course.subject}} [{{course}}]">
+        <p class="big_box"><span>{{course.subject}} - [{{course}}]</span> <span style="font-size: 0.9rem;"
+            class="course_avg"></span> <span class="course_grade"></span></p>
+        <hr>
+        <p class="small_box">
+          {% for scheme in course.get_schemes %}
+          {% for quiz in scheme.get_quizes %}
+          {% for score in quiz.get_user_scores %}
+          <span data-mark="{{score.mark}}">+ {{score.quiz.title}} --- {{score.mark}}</span>
+          {% endfor %}
+          {% endfor %}
+          {% endfor %}
+        </p>
+      </div>
+      {% endfor %}
+
+      <p class="big_box tot_avg"><span>Average</span> <span style="font-size: 0.9rem;" class="total_avg_box"></span><span class="total_grade_box"></span></p>
+
+
+      <button onclick="generatePDF()">GET PDF</button>
+
+    </section>
+    <style>
+      .course_ul {
+        display: flex;
+        align-items: flex-start !important;
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .course_avg {
+        color: darkcyan;
+      }
+    </style>
+
+  </section>
+</section>
+
+<style>
+  .big_box {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .tot_avg {
+    padding: 10px 0;
+  }
+
+  .tot_avg span {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .big_box span {
+    display: inline-block;
+    text-align: center;
+    width: 30%;
+  }
+
+  .report_box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 90%;
+    padding: 3vh 5%;
+    /* border: 3px solid gold; */
+  }
+</style>
+
+
+<script>
+  const courses = document.querySelectorAll('.course_ul')
+  const course_avg = document.querySelectorAll('.course_avg')
+  const course_grade = document.querySelectorAll('.course_grade')
+
+  let avg_box = [];
+  courses.forEach((course, i) => {
+    var avg = 0;
+    [...course.children[2].children].forEach(mark_box => {
+
+      avg = eval(avg + parseFloat(mark_box.dataset.mark))
+    })
+    var quiz_count = [...course.children[2].children].length
+    avg = avg / quiz_count || 0
+    avg_box.push(avg)
+    if (avg > 60) {
+      course_grade[i].innerHTML = 'Excellent'
+    } else if (avg > 40) {
+      course_grade[i].innerHTML = 'Pass'
+    } else {
+      course_grade[i].innerHTML = 'Fail'
+    }
+    course_avg[i].innerHTML = `${avg.toFixed(2)}%`
+    course.dataset.avg = avg.toFixed(2)
+    course.dataset.grade = course_grade[i].innerHTML
+  })
+
+  const total_avg_box = document.querySelector('.total_avg_box')
+  const total_grade_box = document.querySelector('.total_grade_box')
+
+  var total_avg = 0
+  avg_box.forEach(avg => {
+    total_avg = total_avg + avg
+  })
+  total_avg = (total_avg / avg_box.length)
+
+  if (total_avg > 60) {
+    total_grade_box.innerHTML = 'Excellent'
+  } else if (total_avg > 40) {
+    total_grade_box.innerHTML = 'Pass'
+  } else {
+    total_grade_box.innerHTML = 'Fail'
+  }
+
+  total_avg_box.innerHTML = total_avg.toFixed(2) + '%'
+
+
+</script>
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const results = []
+
+  var cur_time = new Date()
+    console.log(cur_time)
+
+  courses.forEach(course=>{
+    results.push({course : course.dataset.course, avg : course.dataset.avg , grade : course.dataset.grade})
+  })
+
+  function generatePDF() {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    const headers = [["Course", "Mark", "Grade"]];
+    const data = results.map((result) => [result.course, result.avg, result.grade]);    
+
+    doc.setFontSize(12);
+    doc.text(`{{user}}  Semester Report`, 10, 10);
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: 20,
+    });
+
+    // Save the PDF
+    doc.save("books.pdf");
+  }
+</script>
+{% endblock js %}

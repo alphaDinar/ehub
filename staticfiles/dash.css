@@ -1,0 +1,399 @@
+
+.page {
+  justify-content: flex-end;
+}
+
+.sideBar {
+  width: 18%;
+  min-height: 90vh;
+  padding: 5vh 1%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d0c22;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: 0.4s ease;
+}
+
+.sideBar.change {
+  width: 3%;
+}
+
+.sideBar button {
+  top: 0;
+  right: 0;
+  background: wheat;
+  color: black !important;
+  padding: 5px;
+  cursor: pointer;
+  position: absolute;
+}
+
+.sideBar header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: wheat;
+}
+
+.sideBar header strong {
+  font-size: 2.3rem;
+}
+
+.sideBar header i {
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.sideBar.change header strong {
+  display: none;
+}
+
+.sideBar nav {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.sideBar nav a,
+.sideBar footer a {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sideBar nav a {
+  color: white;
+}
+
+.sideBar.change nav a span,
+.sideBar.change footer a span {
+  display: none;
+}
+.sideBar footer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.sideBar footer a{
+  padding: 3px;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 80%;
+  padding: 5vh 0%;
+  min-height: 90vh;
+  transition: 0.3s ease;
+}
+
+.main.change {
+  width: 95%;
+}
+
+.main header {
+  width: 90%;
+  padding: 0 5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.main header .box {
+  width: 280px;
+  padding: 15px;
+  height: 150px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #2a2a46;
+  color: #aedce8;
+  justify-content: space-between;
+}
+
+.main header .box p {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.main header .box small {
+  transition: 0.3s ease;
+}
+
+.main header .box:hover small {
+  rotate: 90deg;
+  scale: 1.2;
+}
+
+.main.toggle {
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.main.toggle header {
+  padding: 0;
+  display: none;
+
+}
+
+.main.toggle header a,
+.main.toggle header div {
+  display: none;
+}
+
+.chart_box {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 350px;
+  height: 180px;
+  justify-content: center;
+}
+
+.chart_box legend {
+  display: flex;
+  position: absolute;
+}
+
+.chart_box legend small {
+  display: flex;
+  gap: 0.3rem;
+  font-size: 1.4rem;
+  align-items: center;
+}
+
+.main .con {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.main .con form {
+  width: 90%;
+  padding: 0 5%;
+  min-height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  background: #0d0c22;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+  position: relative;
+}
+
+.main .con form div {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.main .con form span {
+  font-weight: 600;
+}
+
+.main .con form input {
+  width: 230px;
+  height: 30px;
+  padding: 5px 15px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-radius: 40px;
+  border: 1px dotted #24282e;
+}
+
+.main .con form button, .main .con form .button, .main .con form p{
+  position: absolute;
+  right: 10px;
+  font-size: 1rem;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background: #aedce8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.main.toggle form button {
+  rotate: 180deg;
+}
+
+.main .con .scheme_box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-around;
+  width: 90%;
+  padding: 0 5%;
+}
+
+.scheme {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 180px;
+  height: 250px;
+  border-radius: 180px;
+  color: white;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  background: #47bec4;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.scheme_hold {
+  position: relative;
+  border-radius: 180px;
+  overflow: hidden;
+}
+
+.edit_scheme, .assess_scheme {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  font-size: 1.5rem;
+  height: 50px;
+  color: ghostwhite;
+  background: #2a2a46;
+}
+.edit_scheme{
+  bottom: 0;
+}
+.assess_scheme{
+  top: 0;
+}
+
+.edit_scheme i,  .assess_scheme i{
+  transition: 0.6s ease;
+}
+
+.edit_scheme:hover i, .assess_scheme:hover i {
+  rotate: 45deg;
+}
+
+
+.scheme i {
+  color: wheat;
+}
+
+.scheme i,
+.scheme small,
+.scheme span {
+  z-index: 10;
+  transition: 0.3s ease;
+}
+
+.scheme p {
+  height: 10px;
+  width: 10px;
+  background: wheat;
+  background: #aeebc1;
+  background: rgb(243, 98, 85);
+  border-radius: 50%;
+  transition: 0.3s ease;
+}
+
+.scheme small {
+  color: rgb(241, 241, 241);
+}
+
+.scheme:hover p {
+  background: ghostwhite !important;
+  scale: 40;
+}
+
+.scheme:hover i {
+  color: #24282e;
+}
+
+.scheme:hover span {
+  color: #24282e;
+}
+
+.scheme:hover small {
+  color: #24282e;
+}
+
+@media all and (max-width:1300px) {
+
+  .sideBar,
+  .sideBar.change {
+    z-index: 10;
+    width: 230px;
+    padding: 5vh 10px;
+  }
+
+  .sideBar {
+    left: -250px;
+  }
+
+  .sideBar.change {
+    left: 0;
+  }
+
+  .sideBar.change nav a span,
+  .sideBar.change footer a span,
+  .sideBar.change header strong {
+    display: flex;
+  }
+
+  .sideBar button {
+    left: 100%;
+    width: 40px;
+    height: 40px;
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .main.change {
+    width: 100%;
+  }
+
+  .main header {
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+@media all and (max-width:800px) {
+  .main header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media all and (max-width:600px) {
+  .main .con form {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 10px 5%;
+  }
+}
+
+@media all and (max-width:400px) {
+
+  .main header .box,
+  .main header .chart_box {
+    width: 80%;
+  }
+}

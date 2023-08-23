@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        <input type="text" name="type" style="display: none;">
+        <input type="text" name="id" style="display: none;">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        {% csrf_token %}
+        <input type="text" name="grade" placeholder="Grade" required>
+        <input type="number" name="code" placeholder="Code" required>
+        <button type="submit">+</button>
+      </form>
+    </section>
+
+    <style>
+      form input::-webkit-inner-spin-button{
+        display: none;
+      }
+    </style>
+
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Grades</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+      <button type="button" onclick="showForm('new')"> + Add Grade</button>
+    </header>
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox" style="text-align: center;">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+    <div class="grade_box">
+      {% for grade in grades %}
+      <div class="grade" data-name="{{grade}}">
+        <a href="{% url 'super_get_grade_page' grade.slug %}">
+          {{grade}}
+          <small style="font-weight: 400; font-size: 0.9rem;">{{grade.code}}</small>
+        </a>
+        <i class="material-symbols-outlined" data-grade="{{grade}}" data-id="{{grade.id}}" data-code="{{grade.code}}" id="edit"
+          onclick="showForm('old', event.target)">edit</i>
+        <i class="material-symbols-outlined" id="del" onclick="delPrompt(event.target)" data-course="{{grade}}"
+          data-id="{{grade.id}}">delete</i>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+  }
+  .grade a{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: skyblue;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+
+<script>
+  const prompt_box = document.querySelector('.prompt_box')
+  const user_space = document.querySelector('.user_space')
+
+  delPrompt = (main_event) => {
+    user_space.innerHTML = main_event.dataset.course
+    prompt_box.classList.add('show')
+    prompt_box.onclick = (event) => {
+      if (event.target.id === 'no') {
+        prompt_box.remove('show')
+      } else {
+        runAxios('super_delete_grade', main_event.dataset.id, '{{token}}')
+        main_event.parentElement.remove()
+      }
+    }
+  }
+
+  handleData = (data) => {
+    console.log(data.data)
+  }
+</script>
+<script>
+  const add_form = document.querySelector('.add_form')
+  const register_form = document.querySelector('.add_form form')
+  const in_type = document.getElementById('in_type')
+
+  closeForm = () => {
+    add_form.classList.remove('change')
+  }
+
+  showForm = (val, event) => {
+    if (val == 'new') {
+      register_form.children[0].value = 'new'
+    } else {
+      register_form.children[0].value = 'old'
+      register_form.children[1].value = event.dataset.id
+      register_form.children[4].value = event.dataset.grade
+      register_form.children[5].value = event.dataset.code
+    }
+    add_form.classList.add('change')
+  }
+</script>
+<script>
+  const grades = document.querySelectorAll('.grade')
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

@@ -1,0 +1,377 @@
+.sideBar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.sideBar nav small {
+  border-bottom: 1px dotted black;
+  font-size: 1.3rem;
+}
+
+.sideBar nav p {
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sideBar nav p span {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.add_passage_form {
+  position: absolute;
+  top: 8vh;
+  width: 100%;
+  height: 92vh;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  background: rgba(194, 194, 194, 0.74);
+}
+
+.add_passage_form.change {
+  display: flex;
+}
+
+.add_passage_form .passage_form {
+  width: 87%;
+  position: absolute;
+  padding: 10px 1.5%;
+  background: ghostwhite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.add_passage_form input {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  width: 96%;
+  padding: 10px 2%;
+  height: 50px;
+  border: 2px dotted darkgray;
+}
+
+.add_passage_form input::placeholder {
+  font-size: 1.2rem;
+}
+
+.add_passage_form textarea {
+  height: 90%;
+  font-size: 1.1rem;
+  background: white;
+  width: 70%;
+  border: 2px dotted darkgray;
+  padding: 2% 2%;
+  resize: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.add_passage_form button[type='button'] {
+  position: absolute;
+  background: salmon;
+  color: white;
+  height: 30px;
+  width: 30px;
+  border-radius: 0 0 0 10px;
+  right: 0;
+  top: 0;
+}
+
+#passage_thumb {
+  background: rgb(64, 195, 247);
+  cursor: pointer;
+  color: white;
+  padding: 5px;
+}
+
+.passage_form .body_box {
+  display: flex;
+  height: 500px;
+  align-items: center;
+  width: 100%;
+}
+
+.passage_form .image_box {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+}
+
+.passage_form .image_box label {
+  width: 95%;
+  height: 30%;
+  background-position: center;
+  background: white;
+  border: 2px dotted darkgray;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background-size: cover;
+}
+
+.passage_form .image_box label input {
+  display: none;
+}
+
+.add_passage_form button[type='submit'] {
+  padding: 10px;
+  background: black;
+  color: white;
+}
+
+.main {
+  justify-content: center;
+  align-items: center;
+}
+
+.add_form_box {
+  transition: 0.4s ease;
+  height: 92vh;
+  width: 100%;
+  background: rgba(194, 194, 194, 0.74);
+  display: none;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+  top: 8vh;
+  justify-content: center;
+}
+
+.add_form_box.change {
+  display: flex;
+}
+
+.add_form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-direction: column;
+  width: 65%;
+  padding: 2.5vh 2.5%;
+  left: 15%;
+  position: absolute;
+  background: ghostwhite;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.add_form label {
+  font-size: 2rem;
+}
+
+.add_form input[type='text'] {
+  width: 200px;
+  height: 25px;
+  padding: 5px;
+  border: 1px solid darkgray;
+}
+
+.add_form input[type='file'] {
+  display: none;
+}
+
+.dis_box {
+  width: 100%;
+  height: 350px;
+  border: 2px dotted darkgray;
+  background-position: center;
+  background-size: cover;
+}
+
+.dis_box video {
+  width: 100%;
+  height: 100%;
+}
+
+.add_form button[type='button'] {
+  height: 30px;
+  width: 30px;
+  background: salmon;
+  color: ghostwhite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  border-radius: 0 0 0 10px;
+  position: absolute;
+}
+
+.add_form button[type='submit'] {
+  background: rgb(56, 56, 56);
+  color: ghostwhite;
+  cursor: pointer;
+  padding: 10px 25px;
+}
+
+.res_edit_box_nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent !important;
+}
+
+.res_edit_box_nav span {
+  font-size: 2rem;
+}
+
+.res_edit_box_nav input {
+  border: 1px dotted darkgray;
+  width: 240px;
+  height: 25px;
+  border-radius: 40px;
+  padding: 5px 15px;
+}
+
+#add_res {
+  height: 40px;
+  background: black;
+  color: white;
+}
+
+.screen .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit_screen {
+  margin-top: 8vh;
+  transition: 0.4s ease;
+  height: 92vh;
+  width: 100%;
+}
+
+.res_edit_box_nav {
+  height: 8vh;
+  width: 90%;
+  padding: 0 5%;
+}
+
+.res_edit_box {
+  display: flex;
+  width: 90%;
+  height: 80vh;
+  padding: 2vh 5%;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  gap: 2rem 1rem;
+}
+
+.res_edit_box::-webkit-scrollbar {
+  width: 10px;
+  background: lightgray;
+  border-radius: 40px;
+}
+
+.res_edit_box::-webkit-scrollbar-thumb {
+  background: gray;
+  border-radius: 40px;
+}
+
+.res_edit_box .res {
+  width: 136px;
+  cursor: pointer;
+  gap: 0.5rem;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  overflow: hidden;
+  background: linear-gradient(-45deg, transparent 25px, white 0);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  align-items: center;
+  transition: 0.4s ease;
+}
+
+.res_edit_box .res:hover {
+  background: white;
+}
+
+.res_edit_box .res div,
+.res_edit_box .res video {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  height: 80px;
+  background-position: center;
+  background-size: cover;
+}
+
+.res span {
+  font-weight: 600;
+}
+
+.res_edit_box .res a {
+  color: rgb(95, 95, 95);
+}
+
+.res_edit_box_nav {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.res_edit_box_nav button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  color: white;
+  padding: 5px;
+  background: rgb(36, 243, 139);
+  cursor: pointer;
+}
+
+
+
+.del_prompt_box div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.del_prompt_box i {
+  color: rgb(39, 39, 39);
+  font-weight: 600;
+}
+
+.del_prompt_box div button {
+  color: white;
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+
+
+@media all and (max-width:1000px) {
+  .add_form {
+    position: revert;
+    width: 80%;
+  }
+}
+
+@media all and (max-width:500px) {
+  .res_edit_box_nav {
+    min-height: auto;
+    height: auto;
+    flex-direction: column;
+  }
+
+  .add_form {
+    height: 400px;
+  }
+}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Grades</span>
+      <input type="text" placeholder="Search" oninput="runGradeSearch(event.target.value.toLowerCase())">
+      <button onclick="generatePDF()">Generate PDF</button>
+    </header>
+    <div class="inst_box">
+      <span>Select a Student to view Assesment</span>
+    </div>
+    <table class="report_box">
+      <tr class="header">
+        <td id="sh" style="font-weight: 600;">Student</td>
+        {% for course in grade.get_courses %}
+        <td style="font-weight: 600; border: none;" class="course cell" data-course="{{course.id}}" id="course_row">
+          {{course}}</td>
+        {% endfor %}
+        <td id="sh" style="font-weight: 600;">Average</td>
+      </tr>
+
+
+      {% for student in grade.get_students %}
+      <tr class="record" data-name="{{student}}" data-full_name="{{student.first_name}} {{student.last_name}}">
+        <td id="sh">
+          <a href="">{{student.first_name}} {{student.last_name}}</a>
+        </td>
+
+        <div class="record_bank" style="display: none;">
+          {% for score in student.get_scores %}
+          <small data-course="{{score.quiz.topic.course.id}}" data-mark="{{score.mark}}">{{score}}</small>
+          {% endfor %}
+        </div>
+      </tr>
+      <hr>
+      {% endfor %}
+
+    </table>
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+    gap: 0 !important;
+    align-items: center;
+  }
+
+  .report_box {
+    margin-top: 2rem;
+  }
+
+  table{
+    border-spacing: 0;
+  }
+  table hr{
+    width: 100px;
+    border-top: 1px solid black;
+  }
+  td {
+    padding: 15px 10px;
+    text-align: center;
+    border-bottom: 1px solid black;
+    /* border-radius: 3px; */
+  } 
+  tr{
+    padding: 10px 0;
+  }
+</style>
+
+
+
+<script>
+  const course_rows = document.querySelectorAll('[id="course_row"]')
+  const records = document.querySelectorAll('.record')
+  const record_banks = document.querySelectorAll('.record_bank')
+  const record_mark_box = document.querySelectorAll('.record .mark_box')
+
+  records.forEach(record => {
+    course_rows.forEach((row, i) => {
+      var mark_row = document.createElement('td')
+      mark_row.classList.add('mark_row')
+      mark_row.classList.add('cell')
+      mark_row.innerHTML = `A${i}`
+      record.appendChild(mark_row)
+    })
+  })
+
+  records.forEach(record => {
+    var total_box = document.createElement('td')
+    total_box.classList.add('total_box')
+    total_box.innerHTML = 'T box'
+    record.appendChild(total_box)
+  })
+
+
+  const mark_box_holder = document.querySelectorAll('.mark_box')
+  const total_box = document.querySelectorAll('.total_box')
+
+  record_banks.forEach((bank, i) => {
+    let mark_box = []
+    course_rows.forEach(row => {
+      mark_box.push([])
+    });
+    [...bank.children].forEach(mark => {
+      course_rows.forEach((course, i) => {
+        if (mark.dataset.course === course.dataset.course) {
+          mark_box[i].push(mark.dataset.mark)
+        }
+      })
+    });
+
+    let avg = [];
+    var last = records[i].children.length - 1;
+    [...records[i].children].slice(1, last).forEach((el, ii) => {
+      var total = 0
+      mark_box[ii].forEach(mark => {
+        total = total + parseFloat(mark)
+      })
+      total = total / mark_box[ii].length || 0
+      avg.push(total)
+      el.innerHTML = `${total.toFixed(2)} %`
+    })
+
+    var avg_score = 0
+    avg.forEach(el => {
+      avg_score = avg_score + el
+    })
+    avg_score = (avg_score / avg.length).toFixed(2)
+    if(avg_score > 59){
+      total_box[i].style.background = 'springreen'
+    }else if (avg_score > 39) {
+      total_box[i].style.background = 'orange'
+    }else{
+      total_box[i].style.background = 'salmon'
+    }
+    total_box[i].style.color = 'white'
+    total_box[i].parentElement.dataset.avg = avg_score 
+    total_box[i].innerHTML = `${avg_score} %`
+
+  })
+
+</script>
+
+{% endblock page %}
+
+
+{% block js %}
+
+
+<script>
+  document.querySelectorAll('tr').forEach((td,i)=>{
+    anime({
+      targets : td,
+      translateX : [-20,0],
+      opacity : [0,1],
+      duration : 600,
+      delay : i * 30
+    })
+  })
+</script>
+
+<script>
+  const grades = document.querySelectorAll('.record')
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val) && !grade.dataset.avg.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        console.log('me')
+        grade.style.display = 'table-row'
+      }
+    })
+  }
+</script>
+
+
+
+<script>
+  const results = []
+
+  var cur_time = new Date()
+
+
+  let courses = ['A', 'B', 'C']
+
+  records.forEach((record) => {
+    results.push({ student: record.dataset.full_name, avg: record.dataset.avg })
+  })
+
+  console.log(results)
+
+  function generatePDF() {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    const headers = [["Student", "Average"]];
+    const data = results.map((result) => [result.student, result.avg]);
+
+    doc.setFontSize(12);
+    doc.text(`{{user}}  Semester Report`, 10, 10);
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: 20,
+    });
+
+    doc.save("books.pdf");
+  }
+</script>
+{% endblock js %}

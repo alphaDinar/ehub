@@ -1,0 +1,84 @@
+  .main {
+    overflow-x: auto;
+  }
+
+  .subject_box {
+    width: 90%;
+    padding: 5px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .subject_box .subject,
+  td .subject {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(29, 184, 245);
+    height: 25px;
+  }
+
+  table {
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+
+  td,
+  th {
+    min-width: 8vw;
+    padding: 0.5vw;
+    text-align: center;
+    border-right: 1px dotted darkgray;
+  }
+
+  th {
+    background: salmon;
+    color: white;
+  }
+
+  .subject_cell {
+    border: 1px dotted darkgray;
+  }
+
+  .main {
+    align-items: center;
+    gap: 2rem 0;
+  }
+
+  .main hr {
+    width: 90%;
+    border-top: 2px dotted darkgray;
+  }
+
+  .table_nav {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 5px;
+  }
+
+  .table_nav div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .table_nav div input {
+    padding: 10px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius: 5px;
+  }
+
+  .table_nav button {
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: salmon;
+    color: white;
+  }

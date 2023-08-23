@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'sideBar.html' %}
+  <section class="main toggle">
+    <section class="con">
+      <form>
+        <div>
+          <i class="material-symbols-outlined">blur_on</i>
+          
+          <span><a style="color: white;" href="{% url 'assignments_page' course.slug %}">Assignments</a> > <a href="{% url 'get_assignments_page' assignment.topic.slug %}" style="color: white;">{{assignment.topic.topic}} Assignments</a>  > {{assignment}} </span>
+        </div>
+        <input type="text" id="item_in" oninput="runStudentSearch(event.target)">
+        <!-- <button type="button" onclick="show_add_quiz()">+</button> -->
+      </form>
+    </section>
+    <table class="result_box">
+      <tr>
+        <th>Position</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Mark(%)</th>
+        <th>View Work</th>
+        <th>Remarks</th>
+      </tr>
+      {% for score in assignment_scores %}
+      {% if score.student %}
+      <tr data-name="{{score.student}} {{score.student.first_name}} {{score.student.last_name}}"
+        data-score="{{score.mark}}" class="student_row">
+        <td>{{forloop.counter}}</td>
+        <td>{{score.student}}</td>
+        <td>{{score.student.first_name}}</td>
+        <td>{{score.student.last_name}}</td>
+        {% if score.mark > 60 %}
+        <td id="mark_box" style="background: #1de07f; color: white;">{{score.mark}}</td>
+        {% elif score.mark > 40 %}
+        <td id="mark_box" style="background: orange; color: white;">{{score.mark}}</td>
+        {% else %}
+        <td id="mark_box" style="background: salmon; color: white;">{{score.mark}}</td>
+        {% endif %}
+        <td><a href="{% url 'student_assignment_results_page' score.id %}" class="material-symbols-outlined">link</a></td>
+        <td><i class="material-symbols-outlined">message</i></td>
+      </tr>
+      {% else %}
+      <tr data-name="{{score}} {{score.first_name}} {{score.last_name}}" data-score="0" class="student_row">
+        <td>{{forloop.counter}}</td>
+        <td>{{score}}</td>
+        <td>{{score.first_name}}</td>
+        <td>{{score.last_name}}</td>
+        <td style="background: lightgray; color: white;"><i class="material-symbols-outlined">unknown_med</i></td>
+        <td><i class="material-symbols-outlined">unknown_med</i></td>
+        <td><i class="material-symbols-outlined">message</i></td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+      <tr class="last_row">
+        <th>#</th>
+        <td><i class="material-symbols-outlined">person</i></td>
+        <td><i class="material-symbols-outlined">person</i></td>
+        <th>Class avg.</th>
+        <th class="avg_box">25 %</th>
+      </tr>
+    </table>
+  </section>
+</section>
+
+
+<style>
+  .main {
+    align-items: center;
+  }
+
+  .main .con {
+    width: 100%;
+  }
+
+  .result_box {
+    min-width: 50%;
+    padding: 10px;
+  }
+
+  table {
+    border-spacing: 0.5vw 1vw;
+  }
+
+  th {
+    font-weight: 400;
+  }
+
+  tr {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+
+  td,
+  th {
+    text-align: center;
+    padding: 5px 1vw;
+    background: white;
+    border-radius: 5px;
+  }
+
+  th {
+    background: #2a2a46;
+    color: white;
+  }
+</style>
+{% endblock page %}
+
+{% block js %}
+<script>
+  const mark_box = document.querySelectorAll('[id="mark_box"]')
+  const avg_box = document.querySelector('.avg_box')
+
+  var avg_mark = 0
+  mark_box.forEach(el => {
+    avg_mark = avg_mark + parseFloat(el.innerHTML)
+  })
+  if (avg_mark > 0) {
+    avg_mark = avg_mark / mark_box.length
+  }
+  var gradeData = gradeMark(avg_mark)
+  console.log(avg_mark)
+  console.log(gradeMark(60))
+  avg_box.style.background = gradeData.color
+  if (avg_mark > 0) {
+    avg_box.innerHTML = avg_mark.toFixed(2)
+  } else {
+    avg_box.innerHTML = avg_mark || 0
+  }
+
+
+  const student_row = document.querySelectorAll('.student_row')
+  runStudentSearch = (event) => {
+    student_row.forEach(row => {
+      console.log(row.dataset.name.toLowerCase())
+      if (!row.dataset.name.toLowerCase().includes(event.value.toLowerCase()) && !row.dataset.score.includes(event.value.toLowerCase())) {
+        row.style.display = 'none'
+      } else {
+        row.style.display = 'table-row'
+      }
+      runAnime(row)
+    })
+  }
+
+  runAnime = (row) => {
+    anime({
+      targets: row,
+      translateY: [-30, 0],
+      opacity: [0, 1],
+      duration: 600,
+    })
+  }
+</script>
+{% endblock js %}

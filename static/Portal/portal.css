@@ -1,0 +1,247 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form_box {
+  width: 1200px;
+  height: 500px;
+}
+
+.form_box form {
+  display: flex;
+  height: 100%;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.form_left,
+.form_right {
+  height: 96%;
+  padding: 2% 1.5%;
+}
+
+.form_left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 47%;
+}
+
+.form_left header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+}
+
+.form_left .info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem 0;
+
+}
+
+.form_left .info div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form_left .info div p {
+  width: 6%;
+  height: 100%;
+}
+
+.form_left .info div #pass_prompt {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: salmon;
+  font-weight: 600;
+}
+
+.form_right {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px dotted darkgray;
+  gap: 1rem;
+}
+
+.form_right header {
+  height: 10%;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.form_right header input {
+  height: 70%;
+  width: 250px;
+  text-align: center;
+  border-radius: 40px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background: #24282e;
+  color: white;
+}
+
+.form_right div {
+  width: 100%;
+  max-height: 85%;
+  padding: 2% 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  overflow-y: auto;
+  gap: 1rem 0;
+  overflow-x: hidden;
+}
+
+.form_right div::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 40px;
+  background: lightgray;
+}
+
+.form_right div::-webkit-scrollbar-thumb {
+  background: darkgray;
+  border-radius: 40px;
+}
+
+
+.form_right label>input,
+.course_box label>input {
+  display: none;
+}
+
+.form_right label,
+.course_box label {
+  width: 30%;
+}
+
+.course_label {
+  width: 100%;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  background: white;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  align-items: center;
+  border: 1px dotted rgb(57, 199, 255);
+}
+
+.form_right label>input:checked+.course_label,
+.course_box label>input:checked+.course_label {
+  background: rgb(57, 199, 255);
+  color: white;
+}
+
+.form_left .info input {
+  font-size: 1.01rem;
+  height: 25px;
+  border: 1px solid darkgray;
+  padding: 5px 2%;
+}
+
+.form_left .info #i1 {
+  width: 86%;
+}
+
+.form_left .info #i2 {
+  width: 38%;
+}
+
+.form_right {
+  display: flex;
+  align-items: flex-start;
+  width: 47%;
+}
+
+.main_nav {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  min-height: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.form_left button {
+  background: rgb(27, 234, 131);
+  font-weight: 600;
+  color: white;
+  border-radius: 40px;
+  cursor: pointer;
+  padding: 10px 15px;
+}
+
+.course_box {
+  width: 86%;
+  padding: 15px 2%;
+  height: 170px;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid darkgray;
+  display: flex;
+  justify-content: space-around;
+}
+
+.course_box div {
+  width: 100px;
+  background: rgb(27, 234, 131);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 5px;
+  padding: 5px;
+  height: 30px;
+}
+
+@media all and (max-width:1000px) {
+  .page{
+    align-items: flex-start;
+  }
+  .form_box {
+    margin-top: 10vh;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .form_box form {
+    width: 90%;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .form_left,
+  .form_right {
+    border: none;
+    width: 100%;
+  }
+
+  .form_right header input {
+    height: 35px;
+  }
+
+  .form_right div {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}

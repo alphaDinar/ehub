@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include "student_sideBar.html" %}
+  <section class="main" data-quiz_progress="{{quiz_progress}}" data-assignment_progress="{{assignment_progress}}">
+    <section class="dash_box">
+      <section class="course_box" data-course_progress="{{course_progress}}">
+        <div class="banner"><i class="material-symbols-outlined">inventory_2</i> TLM Progress <i
+            class="material-symbols-outlined">inventory_2</i></div>
+        <section class="courses">
+          {% for course in user.student.grade.get_courses %}
+          <a class="course_tab" href="{% url 'student_get_slides_schemes_page' course.slug %}">
+            <span>{{course.subject}}</span>
+            <div class="progress_box">
+              <div class="bar">
+                <div class="progress"></div>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </section>
+      </section>
+
+      <hr style="height: 100%; border-right: 2px dotted darkgray;">
+      <section class="event_box">
+        <div class="banner"><i class="material-symbols-outlined">event</i> Upcoming Events <i
+            class="material-symbols-outlined">event</i></div>
+        <section class="events">
+          {% for event in events %}
+          <div class="event_tab" style="background: {{event.color}};" data-start_date="{{event.start_date|date:'c'}}">
+            <span style="font-size: 1.3rem;"> {{event}}</span>
+            <hr style="width: 70%; border-top: 2px dotted white;">
+            <span class="event_countdown"></span>
+          </div>
+          {% endfor %}
+        </section>
+      </section>
+    </section>
+
+    <section class="wrapper">
+      <section class="wrapper_top">
+        <i class="material-symbols-outlined">assignment</i>Pending Assignments<i
+          class="material-symbols-outlined">assignment</i>
+      </section>
+      <section class="quiz_box">
+        {% for assignment in red_assignments %}
+        <a id="assignment" href="{% url 'student_start_assignment_page' assignment.slug %}" class="item"
+          style="background: tomato; color: white;" data-id="{{assignment.id}}"
+          data-deadline="{{assignment.deadline|date:'c'}}">
+          <small>{{assignment.topic.topic}}</small>
+          <i class="material-symbols-outlined">assignment</i>
+          <span>{{assignment}}</span>
+          <p style="display: flex; flex-direction: column; align-items: center;">
+            <span class="material-symbols-outlined">timer</span>
+            <span id="assignment_countdown"></span>
+          </p>
+        </a>
+        {% endfor %}
+      </section>
+    </section>
+
+    <section class="data_box">
+      <section class="data_box_left">
+        <section class="wrapper_top">
+          <i class="material-symbols-outlined">psychology_alt</i>New Quizes<i
+            class="material-symbols-outlined">psychology_alt</i>
+        </section>
+        <section class="quizes">
+          {% for quiz in quizes %}
+          <a class="quiz_tab" href="{% url 'student_start_quiz_page' quiz.slug %}">
+            <i class="material-symbols-outlined">psychology_alt</i>
+            <span>{{quiz}}</span>
+            <small>{{quiz.duration}} mins.</small>
+          </a>
+          {% endfor %}
+        </section>
+      </section>
+      <section class="update_swiper swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <div class="tlm_progress_box">
+              <h4 style="display: flex; align-items: center;gap:0.5rem;"><i
+                  class="material-symbols-outlined">inventory_2</i> TLM Progress</h4>
+              <span style="font-size: 3rem;font-weight: 600;"></span>
+              <small></small>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="quiz_progress_box">
+              <h4 style="display: flex; align-items: center;gap:0.5rem;"><i
+                  class="material-symbols-outlined">psychology_alt</i> Quiz Progress</h4>
+              <span style="font-size: 3rem;font-weight: 600;"></span>
+              <small></small>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="assignment_progress_box">
+              <h4 style="display: flex; align-items: center;gap:0.5rem;"><i
+                  class="material-symbols-outlined">assignment</i> Assignment Progress</h4>
+              <span style="font-size: 3rem;font-weight: 600;"></span>
+              <small></small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>
+        .update_swiper .swiper-slide div {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          gap: 1rem 0;
+          justify-content: center;
+          width: 100%;
+          cursor: pointer;
+          flex-direction: column;
+        }
+      </style>
+      <style>
+        .main {
+          padding: 2vh 2.5%;
+        }
+
+        .progress_box {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .progress_box .bar {
+          height: 10px;
+          width: 100%;
+        }
+      </style>
+
+    </section>
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  var update_swiper = new Swiper('.update_swiper', {
+    loop: true,
+    autoplay: {
+      delay: 5000
+    },
+    speed: 1000
+  })
+
+  const quiz_progress_box = document.querySelector('.quiz_progress_box')
+  let quiz_progress = JSON.parse(document.querySelector('.main').dataset.quiz_progress)
+  var quiz_percent = parseInt((quiz_progress.attempted * 100) / quiz_progress.total) || 0
+  quiz_progress_box.children[1].innerHTML = quiz_percent + '%'
+  quiz_progress_box.children[1].style.color = gradeMark(quiz_percent).color
+  quiz_progress_box.children[2].innerHTML = `${String(quiz_progress.attempted)} / ${String(quiz_progress.total)}`
+
+  const assignment_progress_box = document.querySelector('.assignment_progress_box')
+  let assignment_progress = JSON.parse(document.querySelector('.main').dataset.assignment_progress)
+  var assignment_percent = parseInt((assignment_progress.attempted * 100) / assignment_progress.total) || 0
+  assignment_progress_box.children[1].innerHTML = assignment_percent + '%'
+  assignment_progress_box.children[1].style.color = gradeMark(assignment_percent).color
+
+  assignment_progress_box.children[2].innerHTML = `${String(assignment_progress.attempted)} / ${String(assignment_progress.total)}`
+</script>
+
+
+<script>
+  let items = document.querySelectorAll('.item')
+</script>
+<script src="{% static 'Student/student.js' %}"></script>
+<script>
+  let course_progress = JSON.parse(document.querySelector('.course_box').dataset.course_progress)
+  const progress = document.querySelectorAll('.progress')
+  const tlm_progress_box = document.querySelector('.tlm_progress_box')
+
+
+  var tlm_progress = 0
+  course_progress.forEach((el, i) => {
+    var progress_val = 0
+    el.forEach(mini_el => {
+      progress_val = progress_val + mini_el
+    })
+    progress_val = Math.round(progress_val / el.length) || 0
+    progress[i].style.width = `${progress_val}%`
+    tlm_progress += progress_val
+  })
+  var total_tlm = course_progress.length * 100
+  tlm_progress_box.children[1].innerHTML = parseInt((tlm_progress * 100) / total_tlm) + '%'
+  tlm_progress_box.children[1].style.color = gradeMark(parseInt((tlm_progress * 100) / total_tlm)).color
+
+
+  const events = document.querySelectorAll('.event_tab')
+  const event_countdown = document.querySelectorAll('.event_countdown')
+
+  runEventTimer = () => {
+    var today = new Date()
+    events.forEach((event, i) => {
+      var event_start_date = event.dataset.start_date
+      var timeLeftData = getTimeLeft(event_start_date, today, event_countdown[i])
+      // if (timeLeftData.timeLeft < 1) {
+      //   event.remove()
+      // }
+    }
+    )
+  }
+
+  const upAnime = (item, i) => {
+    anime({
+      targets: item,
+      duration: 1500,
+      translateY: [100, 0],
+      opacity: [0, 1],
+      delay: i * 150
+    })
+  }
+
+  events.forEach((event, i) => {
+    upAnime(event, i)
+  })
+
+  const rightAnime = (item, i) => {
+    anime({
+      targets: item,
+      duration: 1500,
+      translateX: [-100, 0],
+      opacity: [0, 1],
+      delay: i * 150
+    })
+  }
+
+  const quizes = document.querySelectorAll('.quiz_tab')
+  quizes.forEach((quiz, i) => {
+    rightAnime(quiz, i)
+  })
+
+  const handleData = (data) => {
+    console.log(data)
+  }
+
+  const assignments = document.querySelectorAll('#assignment')
+  const assignment_countdown = document.querySelectorAll('#assignment_countdown')
+
+
+  runAssignmentTimer = () => {
+    assignments.forEach((assignment, i) => {
+      var assignmentInterval =
+        setInterval(() => {
+          var today = new Date()
+          var assignment_deadline = assignment.dataset.deadline
+          var timeLeftData = getTimeLeft(assignment_deadline, today, assignment_countdown[i])
+          if (timeLeftData.timeLeft < 1) {
+            clearInterval(assignmentInterval)
+            runAxios('end_assignment', assignment.dataset.id)
+            assignment.remove()
+          }
+        }, 100)
+    }
+    )
+  }
+  runAssignmentTimer()
+
+  setInterval(() => {
+    runEventTimer()
+  }, 100)
+</script>
+
+{% endblock js %}

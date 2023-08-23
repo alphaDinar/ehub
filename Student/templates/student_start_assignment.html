@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Quiz/quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/start_quiz.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+    <strong style="font-size: 2rem;" class="quiz_info">{{assignment_title}}</strong>
+    <section class="timer_box" style="display: flex;"></section>
+  </div>
+  <i class="lock_box material-symbols-outlined" style="display: none;">Lock</i>
+  <section class="page_box"></section>
+
+  <section class="quiz_box swiper">
+    <div class="swiper-wrapper"></div>
+  </section>
+
+  <div class="quiz_box_nav">
+    <i class="material-symbols-outlined quiz_box_prev">chevron_left</i>
+    <i class="material-symbols-outlined quiz_box_next">chevron_right</i>
+  </div>
+  <a href="{% url 'student_get_assignments_page' assignment_topic_slug %}" class="return_tag"
+    onclick="sessionStorage.clear()">
+    <i class="material-symbols-outlined">chevron_left</i> Return
+    <i class="material-symbols-outlined">chevron_left</i>
+  </a>
+</section>
+{% endblock page %}
+
+{% block js %}
+
+<script src="{% static 'Quiz/start_quiz.js' %}"></script>
+
+<script>
+  const lock_box = document.querySelector('.lock_box')
+  const quiz_info = document.querySelector('.quiz_info')
+
+  submitQuiz = () => {
+    var answer_json = autoSaveQuiz()
+    sessionStorage.clear()
+    runAxios('mark_assignment', ['{{assignment_id}}', JSON.stringify(answer_json)])
+  }
+
+  handleData = (data) => {
+    console.log(data.data)
+  }
+
+  const timer_box = document.querySelector('.timer_box')
+  var djangoDateTimeValue = '{{ assignment_deadline|date:"c" }}';
+
+  runTimer = () => {
+    today = new Date()
+    
+    var timeBox = getTimeLeft(djangoDateTimeValue, today, timer_box)
+    var timeLeft = timeBox.timeLeft
+
+    if(timeBox.daysLeft > 0){
+      timer_box.innerHTML = `${timeBox.daysLeft} : ${timeBox.hoursLeft} : ${timeBox.minutesLeft} : ${timeBox.secondsLeft}`
+    }else{
+      timer_box.innerHTML = `${timeBox.hoursLeft} : ${timeBox.minutesLeft} : ${timeBox.secondsLeft}`
+    }
+    if (timeLeft < 100000) {
+      timer_box.style.color = 'red'
+    }
+    if (timeLeft < 1) {
+      submitQuiz()
+    }
+  }
+
+  let quiz_con = JSON.parse('{{assignment_con | safe}}')
+</script>
+<script src="{% static 'Quiz/createQuiz.js' %}"></script>
+<script>
+  setInterval(() => {
+    runTimer()
+  }, 100)
+</script>
+{% endblock js %}

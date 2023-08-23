@@ -1,0 +1,335 @@
+body {
+  background: #f4f7fa;
+}
+.page{
+  display: flex;
+  justify-content: flex-end;
+}
+.sideBar{
+  width: 18%;
+  min-height: 95vh;
+  padding: 2.5vh 1%;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  z-index: 1000;
+  transition: 0.4s ease;
+}
+.sideBar.change{
+  position: absolute;
+  left: -20%;
+}
+.main.change{
+  width: 100%;
+}
+
+#sideBar_tag{
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+  z-index: 50;
+  background: white;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.sideBar strong{
+  font-size: 1.5rem;
+}
+
+.main{
+  transition: 0.4s ease;
+  position: relative;
+  width: 80%;
+  overflow-x: hidden;
+}
+.main .screen{
+  width: 100%;
+  height: 92vh;
+  /* overflow-y: auto; */
+  margin-top: 8vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-position: center;
+  background-size: cover;
+  transition: 0.4s ease;
+}
+.main nav{
+  display: flex;
+  align-items: center;
+  width: 90%;
+  padding: 0 5%;
+  min-height: 8vh;
+  top: 0;
+  background: #24282e;
+  color: white;
+  position: absolute;
+  transition: 0.4s ease;
+}
+.stat_box{
+  position: absolute;
+  top: 8vh;
+  right: -400px;
+  height: 400px;
+  width: 350px;
+  z-index: 120;
+  background: ghostwhite;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: 0.4s ease;
+  border-radius: 0 0 0 15px;
+}
+.stat_box.change{
+  right: 0;
+}
+#hide_nav{
+  position: fixed;
+  top: 10px;
+  background: white;
+  right: 10px;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.main.hide nav{
+  top: -8vh;
+}
+.main.hide .screen{
+  margin: 0;
+  height: 100vh;
+}
+.main.hide .edit_screen{
+  margin: 0;
+  min-height: 100vh;
+}
+.main.hide .edit_screen .res_edit_box{
+  height: 88vh;
+}
+
+.main.hide .add_form_box{
+  top: 0;
+  height: 100vh;
+}
+.main nav i{
+  cursor: pointer;
+  font-size: 2rem;
+  color: ghostwhite;
+}
+
+.main .screen .mini_screen{
+  width: 100%;
+  height: 89vh;
+}
+
+.nav_tray{
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 40px;
+  width: 100px;
+  background: #24282e;
+}
+.sideBar nav{
+  width: 100%;
+  height: 80vh;
+  /* border: 1px solid black; */
+}
+.sideBar nav button[type='button']{
+  height: 20px;
+  position: absolute;
+  width: 20px;
+  font-size: 1rem;
+  background: white;
+  z-index: 10;
+  color: #24282e;
+  border: 1px solid darkgray;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.sideBar .resource_swiper_prev{
+  left: 10px;
+}
+.sideBar .resource_swiper_next{
+  right: 10px;
+}
+.sideBar nav .swiper-slide{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+.sideBar nav input{
+  width: 85%;
+  padding: 10px 2.5%;
+  border-radius: 40px;
+  background: #d2d7dc;
+  text-align: center;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  /* border: 1px solid black; */
+}
+.sideBar nav .res_box{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  /* border: 1px solid black; */
+  /* height: 70vh; */
+  max-height: 70vh;
+  padding: 10px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  gap: 1rem;
+}
+.sideBar nav .res_box::-webkit-scrollbar{
+  background: #24282e;
+  width: 10px;
+  border-radius: 20px;
+}
+.sideBar nav .res_box::-webkit-scrollbar-thumb{
+  background: rgb(200, 200, 200);
+  height: 50px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+.sideBar nav .res_box::-webkit-scrollbar-thumb:hover{
+  background: darkgray;
+}
+.sideBar nav .res, .slide_tray .res{
+  width: 90%;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 1rem;
+} 
+.sideBar nav .res:hover, .slide_tray .res:hover{
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.sideBar nav .res div, .sideBar nav .res video, .slide_tray .res div, .slide_tray .res video{
+  height: 100%;
+  width: 80px;
+  background-position: center;
+  background-size: cover;
+}
+.sideBar footer a{
+  height: 35px;
+  width: 50px;
+  border-radius: 40px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s ease;
+  /* border-radius: 50%; */
+  color: #24282e;
+  border: 1px dotted darkgray;
+}
+.sideBar a:hover{
+  background: #24282e;
+  color: white;
+}
+
+.passage_title{
+  height: 10%;
+  overflow-y: auto;
+  width: 90%;
+  padding: 0 5%;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  font-weight: 600;
+}
+.passage_body{
+  height: 86%;
+  overflow-y: auto;
+  width: 90%;
+  padding: 2% 5%;
+  font-size: 1.1rem;
+  background: white;
+}
+
+.prompt_box,
+.edit_screen .m_box,
+.del_prompt_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 250px;
+  height: 100px;
+  padding: 15px;
+  right: -280px;
+  background: rgb(33, 189, 250);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  color: white;
+  border-radius: 0 0 0 40px;
+  z-index: 50;
+  transition: 0.4s ease;
+  overflow-y: auto;
+}
+
+.del_prompt_box {
+  gap: 1rem;
+}
+
+.prompt_box.show,
+.del_prompt_box.show,
+.edit_screen .m_box.show {
+  right: 0;
+}
+
+@media all and (max-width:1200px){
+  .sideBar,.sideBar.change{
+    position: fixed;
+    width: 280px;
+    padding: 5vh 10px;
+  }
+  .sideBar{
+    left: -300px;
+  }
+  .sideBar.change{
+    left: 0;
+  }
+  .main,.main.change{
+    width: 100%;
+  }
+  .res_edit_box{
+    justify-content: space-around;
+  }
+}
+@media all and (max-width:600px){
+  .main .screen, .main.hide .screen{
+    width: 100%;
+    min-height: auto;
+    background-position: center;
+    object-fit: cover;
+    background-size: cover;
+  }
+  .main.hide .screen{
+    margin: 0;
+  }
+}

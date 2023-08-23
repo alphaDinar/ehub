@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/set_quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/sideBar_plus.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <div class="quiz_prompt_box">
+    <span>Are you sure you want to clear Quiz</span>
+    <nav>
+      <i style="background: rgb(19, 209, 114);" id="yes">Yes</i>
+      <i style="background: salmon;" id="no">No</i>
+    </nav>
+  </div>
+
+  <style>
+    .answer_prompt_box {
+      position: absolute;
+      min-height: 10px;
+      top: -30px;
+      padding: 10px;
+      color: white;
+      border-radius: 0 0 10px 10px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      transition: 0.4s ease;
+      background: salmon;
+    }
+
+    .answer_prompt_box.show {
+      top: 0;
+    }
+  </style>
+
+  <section class="sideBar">
+    <nav style="gap: 2rem;">
+      <strong>{{quiz}}</strong>
+      <div>
+        <span id="add_question">+</span>
+        <select id="question_mode">
+          <option value="mcq">MCQ</option>
+          <option value="steps">Steps</option>
+          <option value="fill_in">Fill In</option>
+        </select>
+      </div>
+    </nav>
+
+    <div class="clear_quiz_box" onclick="clearQuiz()">
+      <p class="material-symbols-outlined">delete</p>
+      <span>Clear Quiz</span>
+    </div>
+
+    <div class="save_quiz_box" onclick="saveQuiz()">
+      <p class="material-symbols-outlined">save</p>
+      <span>Save Changes</span>
+    </div>
+    <button id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+    <footer>
+      <a href="{% url 'get_quizes_page' quiz.topic.slug %}" class="material-symbols-outlined">arrow_back_ios_new</a>
+    </footer>
+  </section>
+  <section class="main">
+    <div class="answer_prompt_box">
+
+    </div>
+    <section class="page_box">
+    </section>
+    <form class="quiz_box swiper" data-con="{{quiz.con}}" data-marking_scheme="{{quiz.marking_scheme}}">
+      <div class="swiper-wrapper"></div>
+    </form>
+    <div class="quiz_box_nav">
+      <i class="material-symbols-outlined quiz_box_prev">chevron_left</i>
+      <i class="material-symbols-outlined quiz_box_next">chevron_right</i>
+    </div>
+  </section>
+</section>
+
+<style>
+  .main {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .sideBar nav div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+</style>
+
+
+{% endblock page %}
+
+
+
+{% block js %}
+<script>
+  const quiz_wrapper = document.querySelector('.quiz_box .swiper-wrapper')
+  const page_box = document.querySelector('.page_box')
+  const quiz_prompt_box = document.querySelector('.quiz_prompt_box')
+  const answer_prompt_box = document.querySelector('.answer_prompt_box')
+
+  const quiz_form = document.querySelector('.quiz_box')
+  const add_question = document.getElementById('add_question')
+  const question_mode = document.getElementById('question_mode')
+
+  clearQuiz = () => {
+    quiz_prompt_box.classList.add('show')
+    quiz_prompt_box.onclick = (event) => {
+      if (event.target.id === 'yes') {
+        // sessionStorage.clear()
+        runAxios('save_quiz', ['{{quiz.id}}', 'None', 'None'])
+        window.location.reload()
+      } else if (event.target.id === 'no') {
+        quiz_prompt_box.classList.remove('show')
+      }
+    }
+  }
+
+  // window.onblur = () => {
+  //   sessionStorage.clear()
+  // }
+
+</script>
+<script src="{% static 'Quiz/quiz_base.js' %}"></script>
+<script src="{% static 'Quiz/quiz_mcq.js' %}"></script>
+<script src="{% static 'Quiz/quiz_steps.js' %}"></script>
+<script src="{% static 'Quiz/quiz_fill_in.js' %}"></script>
+<script src="{% static 'Quiz/save_del_quiz.js' %}"></script>
+
+<script>
+  // saveQuiz = () => {
+  //   if (quiz_form.checkValidity()) {
+  //     var quiz_json = sessionStorage.getItem('quiz_box')
+  //     var marking_scheme_json = sessionStorage.getItem('marking_scheme')
+  //     answer_prompt_box.innerHTML = ''
+  //     let empty_box = []
+  //     JSON.parse(marking_scheme_json).forEach((el, i) => {
+  //       if (!el.cor_ans) {
+  //         var prompt_span = document.createElement('span')
+  //         prompt_span.innerHTML = `check Q${i + 1}`
+  //         answer_prompt_box.classList.add('show')
+  //         answer_prompt_box.appendChild(prompt_span)
+  //         empty_box.push(el.cor_ans)
+  //       }
+  //     })
+  //     if (empty_box.length < 1) {
+  //       runAxios('save_quiz', ['{{quiz.id}}', quiz_json, marking_scheme_json])
+  //     }
+  //   } else {
+  //     quiz_form.reportValidity()
+  //     makeQuizSwiper()
+  //   }
+  // }
+
+  restoreQuizState = () => {
+    createQuestions = (question_box, cor_ans) => {
+      var counter = question_box.counter + 1
+      if (question_box.type === 'mcq_mode') {
+        generateMcq(counter, question_box.question, question_box.answers, cor_ans.cor_ans)
+      } else if (question_box.type === 'steps_mode') {
+        generateSteps(counter, question_box.question, question_box.answers, cor_ans.cor_ans)
+      }
+      else if (question_box.type === 'fill_in_mode') {
+        var fill_in_box = generateFill_in(counter)
+        question_box.question_list.forEach((mini_q, ii) => {
+          fill_in_add(fill_in_box, parseInt(ii + 1), mini_q, cor_ans.cor_ans[ii], question_box.width_list[ii])
+        })
+      }
+      createPagination(counter)
+    }
+
+    if(quiz_form.dataset.con != 'None'){
+      JSON.parse(quiz_form.dataset.con).forEach((question_box, qi) => {
+        var cor_ans = JSON.parse(quiz_form.dataset.marking_scheme)[qi]
+        createQuestions(question_box, cor_ans)
+      })
+    }
+    delQuestion()
+    handleFill_in()
+    delFill_ins()
+    makeQuizSwiper()
+  }
+
+  restoreQuizState()
+
+
+
+  saveQuiz = () => {
+    console.log('saved')
+
+    let quiz_box = []
+    let marking_scheme = []
+
+    document.querySelectorAll('.question_slide').forEach((question_slide, i) => {
+      if (question_slide.id === 'mcq_mode') {
+        let answer_pack = [];
+        var cor_ans = '';
+        [...question_slide.children[2].children].forEach(answer => {
+          if (answer.children[1].value) {
+            answer_pack.push(answer.children[1].value)
+          }
+          if (answer.children[2].children[0].checked) {
+            cor_ans = answer.children[1].value
+          }
+        })
+        quiz_box.push({
+          counter: i,
+          type: 'mcq_mode',
+          question: question_slide.children[1].value,
+          answers: answer_pack,
+        })
+        marking_scheme.push({ cor_ans: cor_ans })
+
+      } else if (question_slide.id === 'steps_mode') {
+        let answer_pack = [];
+        [...question_slide.children[4].children].forEach(el => {
+          answer_pack.push(el.children[1].value)
+        });
+
+        var cor_ans = '';
+        [...question_slide.children[2].children].forEach(el => {
+          if (el.dataset.index) {
+            cor_ans = cor_ans + `${el.dataset.index}`
+          }
+        })
+
+        quiz_box.push({
+          counter: i,
+          type: 'steps_mode',
+          question: question_slide.children[1].value,
+          answers: answer_pack,
+        })
+        marking_scheme.push({ cor_ans: cor_ans })
+      }
+      else if (question_slide.id === 'fill_in_mode') {
+        let question_list = [];
+        let answer_list = [];
+        let width_list = [];
+        [...question_slide.children[1].children].forEach(mini_q => {
+          question_list.push(mini_q.children[1].value)
+          answer_list.push(mini_q.children[2].value)
+          width_list.push(mini_q.children[1].scrollWidth)
+        })
+        quiz_box.push({
+          counter: i,
+          type: 'fill_in_mode',
+          question_list: question_list,
+          width_list: width_list
+        })
+        marking_scheme.push({ cor_ans: answer_list })
+      }
+    })
+    runAxios('save_quiz', ['{{quiz.id}}', JSON.stringify(quiz_box), JSON.stringify(marking_scheme)])
+  }
+
+
+</script>
+{% endblock js %}

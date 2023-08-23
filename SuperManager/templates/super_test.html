@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  {% for course in student.grade.get_courses  %}
+    <div class="course_hold" data-course="{{course.subject}}">
+      {{course.subject}}  ----
+    </div>
+  {% endfor %}
+    <br><br><br><br>
+  {% for score in student.get_scores %}
+    <div class="course_data" data-course="{{score.quiz.topic.course.subject}}">
+      {{score.mark}}
+    </div>
+  {% endfor %}
+
+  
+  <script>
+    const course_hold = document.querySelectorAll('.course_hold')
+    const course_data = document.querySelectorAll('.course_data')
+
+    course_hold.forEach(hold=>{
+      var tag = hold.dataset.course
+      console.log({tag : 'mikel'})
+      console.log(tag)
+    })
+    console.log(course_hold)
+  </script>
+
+    
+
+</body>
+</html>

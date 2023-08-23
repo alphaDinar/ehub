@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        <input type="text" name="type" style="display: none;">
+        <input type="text" name="id" style="display: none;">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        {% csrf_token %}
+        <input type="text" name="grade" placeholder="grade" required>
+        <div class="num_box">
+          <input type="number" name="min_mark" placeholder="Min" min="0" max="100" required>
+          <input type="number" name="max_mark" placeholder="Max" min="0" max="100" required>
+        </div>
+        <input type="text" name="remark" placeholder="Remark" required>
+        <input type="text" name="color_code" style="display: none;" required>
+        <div class="color_box">
+          <small style="background:#1cf98a;"></small>
+          <small style="background:#11dd77;"></small>
+          <small style="background: rgb(220, 220, 46);"></small>
+          <small style="background: orange;"></small>
+          <small style="background: salmon;"></small>
+          <small style="background: #FF464B;"></small>
+        </div>
+        <div class="show_color">
+        </div>
+        <button type="submit">+</button>
+      </form>
+    </section>
+    <script>
+      const color_small = document.querySelectorAll('.add_form form div small')
+      const color_code = document.querySelector('input[name="color_code"]')
+      const show_color = document.querySelector('.show_color')
+
+      color_small.forEach(small=>{
+        small.onclick =()=>{
+          color_code.value = small.style.background
+          show_color.style.background = small.style.background
+        }
+      })
+    </script>
+
+    <style>
+      form .show_color{
+        width: 40px;
+        height: 40px;
+        transition: 0.4s ease;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        /* background: silver; */
+      }
+      form .color_box{
+        width: 90%;
+        display: flex;
+        justify-content: space-around;
+      }
+      form div small{
+        display: block;
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        background: black;
+      }
+      form{
+        min-width: 350px;
+        border-radius: 0 !important;
+      }
+      @media all and (max-width : 600px){
+        form{
+          min-width: auto;
+          width: 80%;
+        }
+      }
+      form input{
+        border-radius: 0 !important;
+      }
+      form .num_box{
+        display: flex;
+        gap: 1rem;
+      }
+      form input::-webkit-inner-spin-button{
+        display: none;
+      }
+      form input[type='number']{
+        min-width: 80px;
+      }
+    </style>
+
+    <header>
+      <strong>Grading System</strong>
+    </header>
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox" style="text-align: center;">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+    <div class="grade_box">
+      {% for grading in gradings %}
+      <div class="grade" style="color: white;background-color: {{grading.color_code}};">
+        <span>{{grading.grade}}</span>
+        <span>{{grading.min_mark}} - {{grading.max_mark}}</span>
+        <small style="font-size: 0.9rem;">{{grading.remark}}</small>
+        <i class="material-symbols-outlined" style="background: black;" data-grade="{{grading.grade}}" data-id="{{grading.id}}" data-min="{{grading.min_mark}}" data-max="{{grading.max_mark}}" id="edit"
+        data-remark="{{grading.remark}}" data-color="{{grading.color_code}}"  onclick="showForm('old', event.target)">edit</i>
+        <i class="material-symbols-outlined" style="background: black;" id="del" onclick="delPrompt(event.target)" data-grade="{{grading.grade}}"
+          data-id="{{grading.id}}">delete</i>
+      </div>
+      {% endfor %}
+      <div class="grade" onclick="showForm('new')" style="cursor: pointer;">
+        +
+      </div>
+    </div>
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+  }
+  .grade a{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: skyblue;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+
+<script>
+  const prompt_box = document.querySelector('.prompt_box')
+  const user_space = document.querySelector('.user_space')
+
+  delPrompt = (main_event) => {
+    console.log(main_event.dataset)
+    user_space.innerHTML =  `Grade ${main_event.dataset.grade}`
+    prompt_box.classList.add('show')
+    prompt_box.onclick = (event) => {
+      if (event.target.id === 'no') {
+        prompt_box.remove('show')
+      } else {
+        runAxios('super_delete_grading', main_event.dataset.id, '{{token}}')
+        main_event.parentElement.remove()
+      }
+    }
+  }
+
+  handleData = (data) => {
+    console.log(data.data)
+  }
+</script>
+<script>
+  const add_form = document.querySelector('.add_form')
+  const register_form = document.querySelector('.add_form form')
+  const in_type = document.getElementById('in_type')
+
+  closeForm = () => {
+    add_form.classList.remove('change');
+    [...register_form.elements].forEach(el=>{
+      el.value = ''
+    })
+  }
+
+  showForm = (val, event) => {
+    if (val == 'new') {
+      register_form.children[0].value = 'new'
+    } else {
+      register_form.children[0].value = 'old'
+      register_form.children[1].value = event.dataset.id
+      register_form.children[4].value = event.dataset.grade
+      register_form.children[5].children[0].value = event.dataset.min
+      register_form.children[5].children[1].value = event.dataset.max
+      register_form.children[6].value = event.dataset.remark
+      register_form.children[7].value = event.dataset.color
+      register_form.children[9].style.background = event.dataset.color
+    }
+    add_form.classList.add('change')
+  }
+</script>
+<script>
+  const grades = document.querySelectorAll('.grade')
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

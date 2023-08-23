@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        {% csrf_token %}
+        <input type="text" name="type" style="display: none;" value="new">
+        <input type="text" name="id" style="display: none;">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        <input type="text" name="name" placeholder="Event Name" required>
+        <input type="date" name="start_date">
+        <input type="date" name="end_date">
+        <input type="text" name="color" style="display: none;">
+        <div class="color_box">
+          <p style="background: skyblue;"></p>
+          <p style="background: burlywood;"></p>
+          <p style="background: tomato;"></p>
+          <p style="background: rgb(12, 212, 112);"></p>
+          <p style="background: rgb(55, 55, 55);"></p>
+        </div>
+        <button type="submit">+</button>
+      </form>
+    </section>
+
+    <style>
+      .color_box {
+        display: flex;
+        width: 90%;
+        justify-content: space-around;
+      }
+
+      .color_box p {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    </style>
+
+    <header>
+      <strong>Events | {{event_count}}</strong>
+    </header>
+
+    <section class="grade_box">
+      <div id="calendar"></div>
+    </section>
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox" style="text-align: center;">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+  }
+
+  #calendar {
+    width: 100%;
+  }
+
+  .prompt_box {
+    position: fixed;
+    z-index: 300;
+  }
+
+  .del_event {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: -15px;
+    cursor: pointer;
+    background: tomato;
+    color: white;
+    border-radius: 50%;
+  }
+
+  .event_tab {
+    border: 2px solid black;
+  }
+</style>
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const add_form = document.querySelector('.add_form')
+  const register_form = document.querySelector('.add_form form')
+  const in_type = document.getElementById('in_type')
+</script>
+
+<script>
+  const start_date = document.querySelector('input[name="start_date"]')
+  const end_date = document.querySelector('input[name="end_date"]')
+
+  config = {
+    altInput: true,
+    altFormat: "J F, Y",
+    disableMobile: false
+  }
+
+  let events_json = JSON.parse('{{events|safe}}')
+
+
+  const fixCalendarEvents = (calendar) => {
+    let colors = ['skyblue', 'tomato', 'salmon', 'black', 'orange', '#11dd77']
+    events_json.forEach(event => {
+      var start_ = event.start_date.split(' ')
+      var end_ = event.end_date.split(' ')
+      var event_obj = {
+        id: event.id,
+        title: event.name,
+        start: start_[0] + 'T' + start_[1],
+        end: end_[0] + 'T' + end_[1],
+        backgroundColor: event.color,
+        borderColor: 'transparent',
+      };
+      calendar.addEvent(event_obj);
+    })
+  }
+
+  const prompt_box = document.querySelector('.prompt_box')
+  const user_space = document.querySelector('.user_space')
+  const color_box = document.querySelector('.color_box')
+
+
+
+  createCalendar = () => {
+    console.log('memmee')
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      editable: true,
+      dateClick: function (info) {
+        var clickedDate = info.date;
+        flatpickr(start_date, config).setDate(clickedDate.toISOString().split('T')[0])
+        flatpickr(end_date, config).setDate((new Date(clickedDate.setDate(clickedDate.getDate() + 1)).toISOString().split('T')[0]))
+        add_form.classList.add('change');
+        [...color_box.children].forEach(el => {
+          el.onclick = () => {
+            [...color_box.children].forEach(el => { el.style.border = 'none' })
+            el.style.border = '2px solid gray'
+            console.log(register_form.children[9].value = el.style.backgroundColor)
+          }
+        })
+      },
+      eventClick: (info) => {
+        register_form.elements[1].value = 'old'
+        register_form.elements[2].value = info.event.id
+        console.log(register_form.elements[2])
+        register_form.elements[3].value = info.event.title
+        flatpickr(start_date, config).setDate(info.event.start.toISOString().split('T')[0])
+        flatpickr(end_date, config).setDate(info.event.end.toISOString().split('T')[0])
+        const del_event = document.createElement('i')
+        del_event.classList.add('material-symbols-outlined')
+        del_event.classList.add('del_event')
+        del_event.innerHTML = 'delete'
+        register_form.appendChild(del_event)
+        add_form.classList.add('change');
+        [...color_box.children].forEach(el => {
+          el.onclick = () => {
+            [...color_box.children].forEach(el => { el.style.border = 'none' })
+            el.style.border = '2px solid gray'
+            console.log(register_form.children[9].value = el.style.backgroundColor)
+          }
+        })
+        del_event.onclick = () => {
+          user_space.innerHTML = `${info.event.title}`
+          prompt_box.classList.add('show')
+          prompt_box.onclick = (event) => {
+            if (event.target.id === 'no') {
+              prompt_box.remove('show')
+            } else {
+              runAxios('super_delete_event', info.event.id, '{{token}}')
+            }
+          }
+        }
+      },
+    })
+    calendar.render();
+    fixCalendarEvents(calendar);
+  }
+
+  handleData = (data) => {
+    window.location.reload()
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    createCalendar()
+  });
+
+
+  closeForm = () => {
+    add_form.classList.remove('change');
+    [...register_form.elements].forEach(el => {
+      el.value = ''
+    })
+  }
+</script>
+{% endblock js %}

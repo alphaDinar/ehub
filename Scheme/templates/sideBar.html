@@ -1,0 +1,25 @@
+<section class="sideBar">
+  <button class="material-symbols-outlined" id="sideBar_tag">linear_scale</button>
+  <header>
+    <i class="material-symbols-outlined">school</i>
+    <strong>{{course}}</strong>
+  </header>
+  <nav>
+    <a href="{% url 'schemes_page' course.slug %}"><i class="material-symbols-outlined">inventory_2</i> <span>Schemes</span></a>
+    
+    {% if user.is_teacher %}
+    <a href="{% url 'quizes_page' course.slug %}"><i class="material-symbols-outlined">psychology_alt</i> <span>Quizes</span></a>
+    <a href="{% url 'assignments_page' course.slug %}"><i class="material-symbols-outlined">assignment</i> <span>Assignments</span></a>
+    {% else %}
+    <a href=""><i class="material-symbols-outlined">stacked_bar_chart</i> <span>Assesment</span></a>
+    {% endif %}
+
+    <a href=""><i class="material-symbols-outlined">admin_panel_settings</i> <span>Manager</span></a>
+  </nav>
+  <footer>
+    <a href="{% url 'courses_page' %}" style="border-bottom: 1px solid black; color: rgb(55, 185, 236);"><i
+        class="material-symbols-outlined">west</i> <span>Back to Courses</span> </a>
+    <a href="{% url 'logout_page' %}" style="color: salmon; font-weight: 600;"
+      class="material-symbols-outlined">power_settings_new</a>
+  </footer>
+</section>

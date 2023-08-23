@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Grades</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+    </header>
+    <div class="report_box">
+      <section class="header">
+        <span>Student</span>
+        <div class="mark_box_header">
+          {% for course in grade.get_courses %}
+          <span class="course cell" data-course="{{course.id}}" id="course_row">{{course}}</span>
+          {% endfor %}
+        </div>
+        <span>Average</span>
+      </section>
+
+      <style>
+        .report_box .header{
+          display: flex;
+          justify-content: space-around;
+          border: 3px solid salmon;
+        }
+        
+        .cell{
+          width: 70px;
+          padding: 3px;
+          height: 30px;
+          font-size: 0.9rem;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid white;
+          background: salmon;
+        }
+      </style>
+
+      <section>
+        {% for student in grade.get_students %}
+        <div class="record">
+          <span>{{student}}</span>
+          <div class="mark_box">
+
+          </div>
+          <div class="total_box">
+
+          </div>
+          <div class="record_bank" style="display: none;">
+            {% for score in student.get_scores %}
+            <small data-course="{{score.quiz.topic.course.id}}" data-mark="{{score.mark}}">{{score}}</small>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+
+    </div>
+  </section>
+</section>
+
+<script>
+  const course_rows = document.querySelectorAll('[id="course_row"]')
+  const records = document.querySelectorAll('.record')
+  const record_banks = document.querySelectorAll('.record_bank')
+  const record_mark_box = document.querySelectorAll('.record .mark_box')
+
+  record_mark_box.forEach(mark_box => {
+    course_rows.forEach((row, i) => {
+      var mark_row = document.createElement('span')
+      mark_row.classList.add('mark_row')
+      mark_row.classList.add('cell')
+      mark_row.innerHTML = `A${i}`
+      mark_box.appendChild(mark_row)
+    })
+  })
+
+
+  const mark_box_holder = document.querySelectorAll('.mark_box')
+  const total_box = document.querySelectorAll('.total_box')
+
+  record_banks.forEach((bank, i) => {
+    let mark_box = []
+    course_rows.forEach(row => {
+      mark_box.push([])
+    });
+    [...bank.children].forEach(mark => {
+      course_rows.forEach((course, i) => {
+        if (mark.dataset.course === course.dataset.course) {
+          mark_box[i].push(mark.dataset.mark)
+        }
+      })
+    });
+
+    let avg = [];
+    [...mark_box_holder[i].children].forEach((el, ii) => {
+      var total = 0
+      mark_box[ii].forEach(mark => {
+        total = total + parseFloat(mark)
+      })
+      total = total / mark_box[ii].length || 0
+      avg.push(total)
+      el.innerHTML = total.toFixed(2)
+    })
+
+    var avg_score = 0
+    avg.forEach(el => {
+      avg_score = avg_score + el
+    })
+    total_box[i].innerHTML = (avg_score / avg.length).toFixed(2)
+  })
+</script>
+
+
+<style>
+  .mark_box, .mark_box_header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 2px solid salmon;
+    /* width: 60%; */
+  }
+
+  .record {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+</style>
+
+<style>
+  .main {
+    padding: 0 !important;
+    align-items: center;
+  }
+
+  .report_box {
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    gap: 1.5rem;
+    border: 2px solid black;
+    /* height: 100px; */
+  }
+
+  .report_box header {
+    border: 3px solid gold;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+<!-- <script>
+    const grades = document.querySelectorAll('.grade')
+
+    runGradeSearch =(val)=>{
+      grades.forEach(grade=>{
+        if(!grade.dataset.name.toLowerCase().includes(val)){
+          grade.style.display = 'none'
+        }else{
+          grade.style.display = 'flex'
+        }
+      })
+    }
+  </script> -->
+
+{% endblock js %}

@@ -1,0 +1,80 @@
+
+.quiz_box_nav {
+  background: black;
+  border-radius: 5px;
+  color: white;
+}
+
+.quiz_box_nav i {
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.step_box {
+  max-width: 90%;
+  padding: 10px;
+  gap: 0 1rem;
+  height: 40px;
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: auto;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid ghostwhite;
+}
+
+.step_box .box {
+  min-width: 40px;
+  min-height: 40px;
+  background: var(--var-theme);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.page_box {
+  position: absolute;
+  height: 80vh;
+  width: 50px;
+  display: flex;
+  right: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.page_box span {
+  min-width: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 35px;
+  border: 1px solid darkgray;
+  background: white;
+}
+
+#clear_ans {
+  background: black;
+  color: white;
+  padding: 5px;
+  cursor: pointer;
+  background: salmon;
+}
+
+@media all and (max-width:800px) {
+  .page_box {
+    flex-direction: row;
+    position: revert;
+    width: 90%;
+    gap: 0 0.3rem;
+    height: 50px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}

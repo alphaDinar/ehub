@@ -1,0 +1,107 @@
+.main {
+  position: relative;
+}
+
+.main.change .add_quiz {
+  width: 95%;
+}
+
+.add_quiz {
+  position: fixed;
+  transition: 0.4s ease;
+  top: 0;
+  display: none;
+  align-items: center;
+  z-index: 10;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.874);
+  width: 80%;
+  height: 100vh;
+}
+
+.add_quiz.show {
+  display: flex;
+}
+
+.add_quiz #close_add_quiz {
+  position: absolute;
+  top: 5vh;
+  border-radius: 50%;
+  background: salmon;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  width: 30px;
+  cursor: pointer;
+  height: 30px;
+  justify-content: center;
+}
+
+.add_quiz section {
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  justify-content: center;
+  gap: 2rem;
+  min-width: 350px;
+  min-height: 400px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  background: white;
+}
+
+.add_quiz section .input_field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: center;
+  width: 100%;
+}
+
+.add_quiz section .input_field input,
+.add_quiz section .input_field select {
+  width: 70%;
+  border-radius: 40px;
+  font-size: 1.1rem;
+  border: 1px solid darkgray;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.add_quiz section .input_field input::-webkit-inner-spin-button {
+  display: none;
+}
+
+.add_quiz section i {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: -25px;
+  border-radius: 50%;
+  background: #acedc2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.add_quiz section button {
+  rotate: 180deg;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #acedc2;
+}
+
+@media all and (max-width:1300px) {
+
+  .add_quiz,
+  .main.change .add_quiz {
+    width: 100%;
+  }
+}

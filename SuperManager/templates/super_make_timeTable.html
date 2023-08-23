@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Super/timetable.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <h4>{{grade}}</h4>
+    <section class="subject_box" data-timetable_headers="{{gradeTimetable.headers}}"
+      data-timetable_con="{{gradeTimetable.con}}">
+      {% for course in grade.get_courses %}
+      <div class="subject" data-name="{{course.subject}}" draggable="true">{{course.subject}}</div>
+      {% endfor %}
+      <div class="subject" data-name="Break" draggable="true" style="background: black;">Break</div>
+    </section>
+
+    <hr>
+    <table>
+      <tbody>
+        <tr>
+          <th>Day</th>
+        </tr>
+        <tr>
+          <td>Monday</td>
+        </tr>
+        <tr>
+          <td>Tuesday</td>
+        </tr>
+        <tr>
+          <td>Wednesday</td>
+        </tr>
+        <tr>
+          <td>Thursday</td>
+        </tr>
+        <tr>
+          <td>Friday</td>
+        </tr>
+      </tbody>
+    </table>
+    <hr>
+    <section class="table_nav" data-template_headers="{{table_template.headers}}"
+      data-template_con="{{table_template.con}}">
+      <button onclick="saveTable()" style="background: rgb(32, 220, 126);">Save Table</button>
+      <form method="post">
+        {% csrf_token %}
+        <input type="text" name="id" value="{{grade.id}}" style="display: none;">
+        <button type="submit" style="background: tomato;">Reset</button>
+      </form>
+    </section>
+    <hr>
+  </section>
+</section>
+
+<script>
+  const rows = document.querySelectorAll('tr')
+  const start_time = document.getElementById('start_time')
+  const end_time = document.getElementById('end_time')
+  const subjects = document.querySelectorAll('.subject')
+
+  addColumn = () => {
+    rows.forEach((row, i) => {
+      if (i === 0) {
+        var cell = document.createElement('th')
+        cell.classList.add('subject_header')
+      }
+      else {
+        var cell = document.createElement('td')
+        cell.classList.add('subject_cell')
+      }
+      cell.classList.add('cell')
+      row.appendChild(cell)
+    })
+    fixSubjects()
+  }
+
+  remColumn = () => {
+    let cells = document.querySelectorAll('.cell')
+    if (cells.length > 1) {
+      rows.forEach(row => {
+        row.children[row.children.length - 1].remove()
+        saveTableState(document.querySelectorAll('.subject_cell'))
+      })
+    }
+  }
+
+  fixSubjects = () => {
+    let subject_cells = document.querySelectorAll('.subject_cell')
+    subjects.forEach(subject => {
+      subject.ondragstart = () => {
+        subject_cells.forEach((subject_cell, i) => {
+          subject_cell.ondragover = (event) => {
+            event.preventDefault()
+          }
+          subject_cell.ondrop = () => {
+            subject_cell.innerHTML = ''
+            subject_cell.dataset.name = subject.dataset.name
+            var subject_cell_clone = subject.cloneNode(true)
+            subject_cell_clone.draggable = false
+            subject_cell.appendChild(subject_cell_clone)
+            removeCellChild(subject_cells)
+            saveTableState(subject_cells)
+          }
+        })
+      }
+    })
+  }
+  fixSubjects()
+
+  removeCellChild = (subject_cells) => {
+    subject_cells.forEach(subject_cell => {
+      if (subject_cell.children[0]) {
+        subject_cell.children[0].onclick = () => {
+          subject_cell.dataset.name = ''
+          subject_cell.children[0].remove()
+          saveTableState(document.querySelectorAll('.subject_cell'))
+        }
+      }
+    })
+    fixSubjects()
+  }
+
+  saveTableState = (subject_cells) => {
+    let table_json = []
+    subject_cells.forEach(subject_cell => {
+      if (subject_cell.dataset.name) {
+        table_json.push(subject_cell.dataset.name)
+      } else {
+        table_json.push('empty')
+      }
+    })
+    let header_json = []
+    const subject_headers = document.querySelectorAll('.subject_header')
+    subject_headers.forEach(header => {
+      header_json.push(header.innerHTML)
+    })
+    sessionStorage.setItem('subject_headers', JSON.stringify(header_json))
+    sessionStorage.setItem('table_json', JSON.stringify(table_json))
+    return [JSON.stringify(header_json), JSON.stringify(table_json)]
+  }
+
+
+  generateTemplate = (subject_headers_json, subject_json) => {
+    for (let i = 0; i < subject_headers_json.length; i++) {
+      addColumn()
+    }
+    let subject_headers = document.querySelectorAll('.subject_header')
+    subject_headers_json.forEach((header, hi) => {
+      subject_headers[hi].innerHTML = header
+    });
+    let subject_cells = document.querySelectorAll('.subject_cell')
+    subject_json.forEach((subject, si) => {
+      if (subject != 'empty') {
+        subject_cells[si].dataset.name = subject
+        if (subject === 'Break') {
+          subject_cells[si].innerHTML = `<div style="background:black" class="subject" data-name="${subject}" draggable="true">${subject}</div>`
+        } else {
+          subject_cells[si].innerHTML = `<div class="subject" data-name="${subject}" draggable="true">${subject}</div>`
+        }
+      }
+    })
+    removeCellChild(subject_cells)
+  }
+
+
+  const subject_box = document.querySelector('.subject_box')
+  const template_box = document.querySelector('.table_nav')
+
+  createTemplate = () => {
+    let subject_headers_json = []
+    let subject_json = []
+    if (subject_box.dataset.timetable_headers) {
+      subject_headers_json = JSON.parse(subject_box.dataset.timetable_headers)
+      subject_json = JSON.parse(subject_box.dataset.timetable_con)
+      
+    } else {
+      subject_headers_json = JSON.parse(template_box.dataset.template_headers)
+      subject_json = JSON.parse(template_box.dataset.template_con)
+    }
+    generateTemplate(subject_headers_json, subject_json)
+  }
+  createTemplate()
+
+  saveTable = () => {
+    let table_data = saveTableState(document.querySelectorAll('.subject_cell'))
+    runAxios('super_save_timetable', ['{{grade.id}}', table_data], '{{token}}')
+  }
+  handleData = (data) => {
+    console.log(data.data)
+  }
+
+  window.onblur = () => {
+    sessionStorage.clear()
+  }
+</script>
+{% endblock page %}
+
+
+{% block js %}
+{% endblock js %}

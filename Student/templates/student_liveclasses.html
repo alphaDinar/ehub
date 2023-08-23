@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Zoom/zoom.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="">Upcoming Classes</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Classes"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <section class="wrapper">
+      <section class="meeting_box">
+        {% for meeting in meetings %}
+        <a class="meeting" href="{{meeting.join_url}}" data-name="{{meeting.topic}}"
+          data-start_time="{{meeting.start_time|date:'c'}}">
+          <span>{{meeting.topic}}</span>
+          <span>{{meeting.course.subject}}</span>
+          <span class="timeBox"></span>
+          <span>{{meeting.start_time}}</span>
+        </a>
+        {% endfor %}
+      </section>
+    </section>
+
+    <div class="banner" style="width: 90%;"></div>
+
+    <section style="width: 100%;">
+      <div id='calendar' style="width: 100%;" ></div>
+    </section>
+  </section>
+</section>
+
+{% endblock page %}
+
+{% block js %}
+<script>
+  let meeting_json = JSON.parse('{{meeting_json|safe}}')
+
+  console.log(meeting_json)
+
+  fixCalendarEvents =(calendar)=>{
+    meeting_json.forEach(meeting=>{
+      var meeting_obj = {
+        id : meeting.join_url,
+        title: `${meeting.course} `,
+        start: meeting.start_time.split(' ')[0]+'T'+meeting.start_time.split(' ')[1],
+        // end: meeting.start_time.split(' ')[0]+'T'+meeting.start_time.split(' ')[1],
+        // backgroundColor : 'black',
+        // borderColor : 'transparent'
+      };
+      calendar.addEvent(meeting_obj);
+    })
+  }
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      eventClick : (info)=>{
+        window.location.href = info.event.id
+      }
+    });
+    calendar.render();
+    fixCalendarEvents(calendar)
+  });
+</script>
+
+
+<script>
+  const upcoming_box = document.querySelector('.upcoming_box')
+  const meetings = document.querySelectorAll('.meeting')
+  const timeBox = document.querySelectorAll('.timeBox')
+
+  meetings.forEach((meeting, i) => {
+    setInterval(() => {
+      let timeLeftData = getTimeLeft(meeting.dataset.start_time, new Date())
+      var daysLeft = timeLeftData.daysLeft
+      var hoursLeft = timeLeftData.hoursLeft
+      var minutesLeft = timeLeftData.minutesLeft
+      var secondsLeft = timeLeftData.secondsLeft
+      var timeLeft = timeLeftData.timeLeft
+
+      if (timeLeft > 0) {
+        if (daysLeft > 0) {
+          timeBox[i].innerHTML = `${daysLeft} days | ${hoursLeft}: ${minutesLeft} : ${secondsLeft}`
+        } else {
+          timeBox[i].innerHTML = `${hoursLeft}: ${minutesLeft} : ${secondsLeft}`
+        }
+      } else {
+        timeBox[i].innerHTML = `00: 00 : 00`
+      }
+      if (timeLeft < 3600000 * 24) {
+        meeting.style.background = '#ff464b'
+      }
+    }, 100)
+  })
+</script>
+{% endblock js %}

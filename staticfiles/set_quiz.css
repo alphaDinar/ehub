@@ -1,0 +1,60 @@
+
+.answer_box .answer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  color: white;
+  background: rgb(57, 199, 255);
+  background: radial-gradient(circle at left, transparent 5px, rgb(57, 199, 255) 0);
+  border-radius: 5px;
+  min-height: 50px;
+  min-width: 50%;
+  max-width: 100%;
+  padding: 2.5px 1%;
+}
+
+.answer small,
+.answer input,
+.answer label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.answer small {
+  width: 10%;
+}
+
+.answer input[type='text'] {
+  width: 75%;
+  font-size: 1.1rem;
+  padding: 0 2%;
+  background: rgb(57, 199, 255);
+  color: white;
+  border-right: 1px dotted white;
+  border-left: 1px dotted white;
+}
+
+.answer label {
+  width: 10%;
+}
+
+.answer label input[type='radio'] {
+  height: 1px;
+  width: 1px;
+}
+
+.ans_rad {
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+label>input:checked+.ans_rad {
+  background: white;
+  rotate: 360deg;
+  color: rgb(57, 199, 255);
+}

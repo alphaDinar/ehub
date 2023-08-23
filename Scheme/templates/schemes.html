@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'sideBar.html' %}
+
+  {% if user.is_teacher %}
+  <section class="main">
+    {% else %}
+    <div class="prompt_box">
+      <p>Are you sure you want to delete</p>
+      <span class="user_space"></span>
+      <nav>
+        <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+        <button id="no" style="background: salmon;">No</button>
+      </nav>
+    </div>
+
+    <section class="main toggle">
+      <section class="add_form">
+        <form method="post">
+          {% csrf_token %}
+          <input type="text" name="type" style="display: none;">
+          <input type="text" name="id" style="display: none;">
+          <input type="text" name="name" placeholder="Scheme">
+          <button type="submit">+</button>
+          <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        </form>
+      </section>
+      {% endif %}
+
+      {% if user.is_teacher %}
+      <header>
+        {% if recent_scheme %}
+        <a href="{% url 'use_scheme_page' recent_scheme.scheme.slug %}" class="box">
+          <p>
+            <i class="material-symbols-outlined">history</i>
+            <span>Recent</span>
+          </p>
+          <span>{{recent_scheme.scheme.topic}}</span>
+          <p>
+            <small class="material-symbols-outlined">trending_flat</small>
+          </p>
+        </a>
+        {% else %}
+        <a class="box">
+          <p>
+            <i class="material-symbols-outlined">history</i>
+            <span>Recent</span>
+          </p>
+          <span>No Recents</span>
+          <p>
+            <small class="material-symbols-outlined">trending_flat</small>
+          </p>
+        </a>
+        {% endif %}
+
+        <div class="chart_box">
+          <legend>
+            <small class="material-symbols-outlined" style="color: #fe6265;">pending</small>
+            <small class="material-symbols-outlined" style="color: #00acea;">bolt</small>
+            <small class="material-symbols-outlined" style="color: #acedc2;">verified</small>
+          </legend>
+          <canvas id="myChart"></canvas>
+        </div>
+        <div class="box" style="cursor: pointer;" onclick="addForm()">
+          <p>
+            <i class="material-symbols-outlined">edit</i>
+            <span>New Scheme</span>
+          </p>
+          <span>+</span>
+          <p>
+            <small class="material-symbols-outlined">trending_flat</small>
+          </p>
+        </div>
+      </header>
+      {% endif %}
+
+
+      <section class="con">
+        <form>
+          <div>
+            <i class="material-symbols-outlined">blur_on</i>
+            <span>Schemes | {{schemes.count}}</span>
+          </div>
+          <input type="text" id="item_in">
+          <select id="item_select">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          {% if user.is_teacher %}
+          <button type="button" class="material-symbols-outlined">north</button>
+          {% else %}
+          <p style="cursor: pointer;" class="material-symbols-outlined" onclick="showForm('new')">add</p>
+          {% endif %}
+
+        </form>
+
+        {% if messages %}
+        {% for message in messages %}
+        <span class="mBox" style="text-align: center;">{{message}}</span>
+        {% endfor %}
+        {% endif %}
+
+        <div class="scheme_box">
+          {% for scheme in schemes %}
+          <div class="scheme_hold" id="item" data-name="{{scheme.topic}}" data-status="{{scheme.status}}">
+
+            <a {% if user.is_teacher %} href="{% url 'use_scheme_page' scheme.slug %}" {% endif %} class="scheme">
+              <i class="material-symbols-outlined">inventory_2</i>
+              <span>{{scheme.topic}}</span>
+
+
+              {% if user.is_teacher %}
+              {% if scheme.status == 'pending' %}
+              <p style="background: #fe6265;"></p>
+              {% elif scheme.status == 'active' %}
+              <p style="background: #00acea;"></p>
+              {% else %}
+              <p style="background: #acedc2;"></p>
+              {% endif %}
+              <small>43 mins ago</small>
+              {% else %}
+              <style>
+                .scheme button {
+                  cursor: pointer;
+                  border-radius: 50%;
+                  padding: 5px;
+                }
+              </style>
+
+              <div>
+                <button class="material-symbols-outlined" data-topic="{{scheme.topic}}" data-id="{{scheme.id}}"
+                  onclick="showForm('old', event.target)">edit</button>
+                <button class="material-symbols-outlined" data-topic="{{scheme.topic}}" data-id="{{scheme.id}}"
+                  onclick="delPrompt(event.target)">delete</button>
+              </div>
+              {% endif %}
+            </a>
+
+            {% if user.is_teacher %}
+            <a href="{% url 'edit_scheme_page' scheme.slug %}" class="edit_scheme">
+              <i class="material-symbols-outlined">settings</i>
+            </a>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+
+        </div>
+      </section>
+    </section>
+  </section>
+
+  <script>
+    const add_form = document.querySelector('.add_form')
+    const register_form = document.querySelector('.add_form form')
+    showForm = (val, main_event) => {
+      console.log(val)
+      register_form.children[3].value = ''
+      if (val === 'new') {
+        register_form.children[1].value = 'new'
+      } else {
+        register_form.children[1].value = 'old'
+        register_form.children[2].value = main_event.dataset.id
+        register_form.children[3].value = main_event.dataset.topic
+      }
+      add_form.classList.add('change')
+    }
+
+    closeForm = () => {
+      add_form.classList.remove('change')
+    }
+
+    const prompt_box = document.querySelector('.prompt_box')
+    const user_space = document.querySelector('.user_space')
+
+    delPrompt = (main_event) => {
+      user_space.innerHTML = main_event.dataset.topic
+      prompt_box.classList.add('show')
+      prompt_box.onclick = (event) => {
+        if (event.target.id === 'no') {
+          prompt_box.classList.remove('show')
+        } else {
+          runAxios('delete_scheme', main_event.dataset.id, '{{token}}')
+          anime({
+            targets: main_event.parentElement.parentElement.parentElement,
+            translateY: [0, 30],
+            opacity: [1, 0],
+            duration: 400,
+            complete: () => {
+              main_event.parentElement.parentElement.parentElement.remove()
+              prompt_box.classList.remove('show')
+            }
+          })
+        }
+      }
+    }
+
+    handleData = (data) => {
+      console.log(data.data)
+    }
+  </script>
+
+  {% endblock page %}
+
+
+
+  {% block js %}
+  <script>
+    const item_in = document.getElementById('item_in')
+    const item_select = document.getElementById('item_select')
+    const items = document.querySelectorAll('#item')
+
+    item_in.oninput = () => {
+      items.forEach(el => {
+        var el_name = el.dataset.name.toLowerCase()
+        if (!el_name.includes(item_in.value)) {
+          el.style.display = 'none'
+        } else {
+          el.style.display = 'flex'
+        }
+        runSearchAnime(el)
+      })
+    }
+
+    item_select.onchange = () => {
+      items.forEach(el => {
+        var el_status = el.dataset.status.toLowerCase()
+        if (item_select.value === 'all') {
+          el.style.display = 'flex'
+        } else {
+          if (el_status != item_select.value.toLowerCase()) {
+            el.style.display = 'none'
+          } else {
+            el.style.display = 'flex'
+          }
+        }
+        runSearchAnime(el)
+      })
+    }
+
+    items.forEach((el, i) => {
+      anime({
+        targets: el,
+        translateX: [-50, 0],
+        opacity: [0, 1],
+        duration: 300,
+        easing: 'spring(1, 80, 10, 0)',
+        delay: i * 100
+      })
+    })
+
+    document.querySelectorAll('.main header .box').forEach((el, i) => {
+      anime({
+        targets: el,
+        translateY: [-50, 0],
+        opacity: [0, 1],
+        scale: [0.8, 1],
+        duration: 500,
+        easing: 'spring(1, 80, 10, 0)',
+        delay: i * 100
+      })
+    })
+
+  </script>
+
+
+  {% if user.is_teacher %}
+  <script>
+    const ctx = document.getElementById('myChart');
+    var pendCount = parseInt('{{status.pend_count}}')
+    var actCount = parseInt('{{status.act_count}}')
+    var compCount = parseInt('{{status.comp_count}}')
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          backgroundColor: ['#00acea', '#acedc2', '#fe6265'],
+          data: [actCount, compCount, pendCount],
+          borderWidth: 1,
+        }]
+      },
+    });
+  </script>
+  {% else %}
+
+
+
+  {% endif %}
+
+  {% endblock js %}

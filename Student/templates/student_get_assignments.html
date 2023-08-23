@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <header class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="{% url 'student_assignments_page'%}">Assignment ></a>
+          <a href="{% url 'student_assignments_page'%}">Courses ></a>
+          <a href="{% url 'student_get_assignments_schemes_page' scheme.course.slug %}">schemes ></a>
+          <a href="{% url 'student_get_assignments_page' scheme.slug %}">Assignments :</a>
+          <a href=""><i class="material-symbols-outlined">numbers</i> {{scheme.get_assignments.count}}</a>
+        </p>
+      </div>
+      <div class="swiper_nav">
+        <i class="material-symbols-outlined prev">chevron_left</i>
+        <small>Pending</small>
+        <i class="material-symbols-outlined next">chevron_right</i>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Assignment"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+
+    <style>
+      .swiper_nav {
+        border: 1px solid black;
+      }
+
+      .swiper_nav i {
+        height: 30px;
+        width: 30px;
+        display: flex;
+        font-weight: 600;
+        color: darkgray;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+      }
+
+      .swiper_nav small {
+        width: 80px;
+        text-align: center;
+      }
+    </style>
+
+    <header class="header_swiper swiper">
+      <div class="swiper-wrapper">
+        <section class="swiper-slide pend_box" data-pend_high_scores="{{pend_high_scores}}"
+          data-pend_question_num="{{pend_question_num}}" data-pend_result_links="{{pend_result_links}}">
+          {% for assignment in scheme.get_assignments %}
+          {% if assignment.status == 'pending' %}
+          <a href="{% url 'student_start_assignment_page' assignment.slug %}" class="item" id="assignment"
+            data-status="{{assignment.status}}" data-deadline="{{assignment.deadline|date:'c'}}"
+            data-name="{{assignment.title}}" data-subject="{{assignment.title}}">
+            <i class="material-symbols-outlined">assignment</i>
+            <small>
+              <span class="q_num_box">40</span>
+              <span>Q.</span>
+            </small>
+            <span style="font-size: 1.5rem;">{{assignment.title}}</span>
+            <span style="font-size: 1.5rem;">--</span>
+            <div class="quiz_data" style="scale: 1;">
+              <p>
+                <span class="material-symbols-outlined">timer</span>
+                <span class="attempt_box" id="assignment_countdown"></span>
+              </p>
+            </div>
+          </a>
+          {% endif %}
+          {% endfor %}
+        </section>
+        <section class="swiper-slide comp_box" data-comp_high_scores="{{comp_high_scores}}"
+          data-comp_question_num="{{comp_question_num}}" data-comp_result_links="{{comp_result_links}}">
+          {% for assignment in scheme.get_assignments %}
+          {% if assignment.status == 'completed' %}
+          <a style="background: white; color: darkgray;" class="item" id="assignment"
+            data-status="{{assignment.status}}" data-deadline="{{assignment.deadline|date:'c'}}"
+            data-name="{{assignment.title}}" data-subject="{{assignment.title}}">
+            <i class="material-symbols-outlined">assignment</i>
+            <small>
+              <span class="q_num_box">40</span>
+              <span>Q.</span>
+            </small>
+            <span style="font-size: 1.5rem;">{{assignment.title}}</span>
+            <span style="font-size: 1.5rem;">--</span>
+            <div class="quiz_data" style="scale: 1;">
+              <p style="color: darkgray;">
+                <span class="material-symbols-outlined">timer</span>
+                <span class="attempt_box" id="assignment_countdown"></span>
+              </p>
+            </div>
+            <span>{{assignment.deadline|timesince}} ago</span>
+            <small id="grade_small"></small>
+          </a>
+          {% endif %}
+          {% endfor %}
+        </section>
+      </div>
+    </header>
+
+    <style>
+      header {
+        width: 100%;
+      }
+
+      header .swiper-slide {
+        display: flex;
+        justify-content: space-around;
+        gap: 2rem;
+        flex-wrap: wrap;
+        padding: 3vh 0;
+      }
+    </style>
+
+    <script>
+      manageHeaderSwiper = () => {
+        document.querySelector('.swiper_nav .prev').onclick = () => {
+          document.querySelector('.swiper_nav small').innerHTML = 'Pending'
+          sessionStorage.setItem('pagination', 0)
+        }
+        document.querySelector('.swiper_nav .next').onclick = () => {
+          document.querySelector('.swiper_nav small').innerHTML = 'Completed'
+          sessionStorage.setItem('pagination', 1)
+        }
+        var header_swiper = new Swiper('.header_swiper', {
+          loop: false,
+          speed: 1000,
+          allowTouchMove: false,
+          navigation: {
+            'prevEl': '.swiper_nav .prev',
+            'nextEl': '.swiper_nav .next'
+          }
+        })
+        if (sessionStorage.getItem('pagination')) {
+          header_swiper.slideTo(sessionStorage.getItem('pagination'))
+          if (parseInt(sessionStorage.getItem('pagination')) === 0) {
+            document.querySelector('.swiper_nav small').innerHTML = 'Pending'
+          } else {
+            document.querySelector('.swiper_nav small').innerHTML = 'Completed'
+          }
+        }
+      }
+      manageHeaderSwiper()
+
+
+    </script>
+
+    <style>
+      .quiz_data {
+        display: flex;
+        scale: 0.75;
+        align-items: center;
+        width: 80%;
+        gap: 0.3rem;
+        padding: 5px;
+        justify-content: space-around;
+      }
+
+      .quiz_data p {
+        color: white;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+    </style>
+    <style>
+      .item {
+        overflow: hidden;
+        position: relative;
+      }
+
+      .item #grade_small {
+        font-size: 0.9rem;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+    </style>
+
+
+
+</section>
+</section>
+
+<style>
+  .item_hold {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .item {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .high_score_box {
+    font-size: 1.5rem;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+  }
+</style>
+
+<style>
+  .item {
+    background: #e8bc62;
+    color: white;
+  }
+</style>
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  let items = document.querySelectorAll('.item')
+</script>
+<script src="{% static 'Student/student.js' %}"></script>
+
+
+<script>
+  const assignments = document.querySelectorAll('[id="assignment"]')
+  const assignment_countdown = document.querySelectorAll('[id="assignment_countdown"]')
+
+  runTimer = () => {
+    var today = new Date()
+    assignments.forEach((assignment, i) => {
+      if (assignment.dataset.status === 'pending') {
+        var assignment_deadline = assignment.dataset.deadline
+        var timeLeftData = getTimeLeft(assignment_deadline, today, assignment_countdown[i])  
+
+        if(timeLeftData.color === 'tomato'){
+          assignment_countdown[i].parentElement.parentElement.parentElement.style.background = '#ff464b'
+        }
+        if(timeLeftData.timeLeft < 1){
+          assignment_countdown[i].parentElement.parentElement.parentElement.remove()
+        }
+      }
+    })
+  }
+
+  setInterval(() => {
+    runTimer()
+  }, 100)
+</script>
+
+<script>
+  const pend_high_scores = JSON.parse(document.querySelector('.pend_box').dataset.pend_high_scores)
+  const pend_question_num = JSON.parse(document.querySelector('.pend_box').dataset.pend_question_num)
+  const pend_result_links = JSON.parse(document.querySelector('.pend_box').dataset.pend_result_links)
+  const comp_high_scores = JSON.parse(document.querySelector('.comp_box').dataset.comp_high_scores)
+  const comp_question_num = JSON.parse(document.querySelector('.comp_box').dataset.comp_question_num)
+  const comp_result_links = JSON.parse(document.querySelector('.comp_box').dataset.comp_result_links)
+
+  const pend_assignments = document.querySelectorAll('.pend_box #assignment')
+  pend_assignments.forEach((assignment, i) => {
+    assignment.children[1].children[0].innerHTML = pend_question_num[i]
+    if (pend_high_scores[i] != 'empty') {
+      var gradeData = gradeMark(pend_high_scores[i])
+      assignment.children[3].innerHTML = `${pend_high_scores[i]} %`
+      assignment.children[3].style.color = gradeData.color
+      assignment.href = `/student_assignment_results/${pend_result_links[i]}`
+    }
+  })
+
+  const comp_assignments = document.querySelectorAll('.comp_box #assignment')
+  comp_assignments.forEach((assignment, i) => {
+    assignment.children[1].children[0].innerHTML = comp_question_num[i]
+    if (comp_high_scores[i] != 'empty') {
+      var gradeData = gradeMark(comp_high_scores[i])
+      assignment.children[3].innerHTML = `${comp_high_scores[i]} %`
+      assignment.children[3].style.color = gradeData.color
+      assignment.href = `/student_assignment_results/${comp_result_links[i]}`
+    }
+  })
+  // console.log(pend_result_links)
+</script>
+
+{% endblock js %}

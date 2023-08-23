@@ -1,0 +1,413 @@
+:root {
+  --var-bg: rgb(57, 199, 255);
+}
+
+.sideBar header {
+  text-align: center;
+}
+
+.sideBar {
+  border-right: 1px dotted darkgray;
+}
+
+.sideBar nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  width: 90%;
+  padding: 10px 0;
+  gap: 1.3rem;
+}
+
+.sideBar nav hr {
+  width: 90%;
+  border-top: 2px dotted darkgray;
+}
+
+.sideBar nav div {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sideBar nav input {
+  width: 90%;
+  text-align: center;
+  padding: 10px 5px;
+  border-radius: 40px;
+  border: 1px solid darkgray;
+}
+
+.sideBar nav div input::-webkit-inner-spin-button {
+  display: none;
+}
+
+.sideBar nav div p {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border: 1px solid transparent;
+  transition: 0.3s ease;
+  background: rgb(57, 199, 255);
+  cursor: pointer;
+  color: white;
+}
+
+.sideBar nav div p:hover {
+  background: white;
+  color: rgb(57, 199, 255);
+  border: 1px dotted rgb(57, 199, 255);
+}
+
+
+.sideBar nav,
+.sideBar nav form,
+.sideBar nav form div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sideBar nav {
+  justify-content: center;
+}
+
+.sideBar nav form {
+  width: 100%;
+  gap: 2rem;
+}
+
+.sideBar nav form button {
+  padding: 10px;
+  border-radius: 40px;
+  color: white;
+  border: 1px solid darkgray;
+  background: transparent;
+  color: rgb(52, 52, 52);
+  cursor: pointer;
+}
+
+.sideBar nav form div {
+  width: 100%;
+  gap: 0.3rem;
+}
+
+.sideBar nav hr {
+  width: 90%;
+  border-top: 2px dotted darkgrey;
+}
+
+.quiz_actions {
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.quiz_actions hr {
+  height: 20px;
+  border-right: 1px solid black;
+}
+
+.quiz_actions a {
+  font-size: 1.5rem;
+}
+
+.palette_box {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  gap: 0.5rem;
+  flex-direction: column;
+  display: flex;
+}
+
+.palette_box p {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.quiz_box button[type='button'] {
+  z-index: 200;
+  height: 50px;
+  width: 50px;
+  position: absolute;
+  background: transparent;
+  font-weight: 600;
+  font-size: 3rem;
+  cursor: pointer;
+  color: darkgray;
+}
+
+.quiz_box_prev {
+  left: 10px;
+}
+
+.quiz_box_next {
+  right: 10px;
+}
+
+.screen {
+  background: white;
+  border-left: 1px dotted darkgray;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  border: none;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+
+
+
+.score_box {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  font-size: 1.2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  z-index: 10;
+  border-radius: 50%;
+  background: var(--var-score_box);
+}
+
+.main {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.main .screen {
+  width: 80%;
+  border: none;
+  position: none;
+}
+
+.quiz_box {
+  width: 100%;
+}
+
+.quiz_box button[type='button'] {
+  top: 10%;
+}
+
+.ans_rad {
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+
+.quiz_box .swiper-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+
+.question_box {
+  max-height: 110px;
+  display: inline;
+  overflow-y: auto;
+  word-wrap: break-word;
+  max-width: 90%;
+  padding: 10px;
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: rgb(1, 54, 54);
+  font-size: 1.1rem;
+}
+
+
+.question_box::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 40px;
+  background: lightgray;
+}
+
+.question_box::-webkit-scrollbar-thumb {
+  background: darkgray;
+  border-radius: 40px;
+}
+
+
+.cor_ans {
+  padding: 10px;
+  width: 90%;
+  text-align: center;
+  font-size: 1.3rem;
+  border-top: 2px dotted var(--var-bg);
+  display: flex;
+  justify-content: center;
+  max-height: 70px;
+  overflow-y: auto;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+
+.question_tag {
+  color: darkgray;
+  display: flex;
+  justify-content: center;
+  font-size: 1.1rem;
+  align-items: center;
+}
+
+.page_box {
+  min-height: 50px;
+  max-height: 50px;
+  width: 80%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 5px;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  font-size: 1.2rem;
+  align-items: center;
+  transition: 0.4s ease;
+}
+
+.page_box.show {
+  right: 10px;
+}
+
+.page_box::-webkit-scrollbar {
+  width: 10px;
+  background: lightgray;
+  border-radius: 40px;
+}
+
+.page_box::-webkit-scrollbar-thumb {
+  background: darkgray;
+  border-radius: 40px;
+}
+
+.page_box p {
+  height: 30px;
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 3px;
+  justify-content: center;
+  background: white;
+  border: 1px solid darkgray;
+  color: darkgrey;
+}
+
+
+
+.prompt_box {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.prompt_box p {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.prompt_box p button {
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.q_prompt_box {
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  gap: 0.3rem;
+  position: absolute;
+}
+
+.q_prompt_box.show {
+  display: flex;
+}
+
+.q_prompt_box span {
+  font-size: 1.4rem;
+}
+
+.q_prompt_box hr {
+  width: 100%;
+  border-top: 2px dotted darkgray;
+}
+
+.quiz_submit {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--var-bg);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+
+@media all and (max-width:1300px) {
+  .screen {
+    gap: 1rem;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+  }
+
+  .answer_box {
+    gap: 1rem;
+  }
+
+  .score_box {
+    position: revert;
+  }
+
+  .quiz_box {
+    width: 95%;
+  }
+
+  .quiz_box .swiper-slide {
+    gap: 2rem;
+  }
+}
+
+
+@media all and (max-width:1200px) {
+  .sideBar {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+}
+
+
+@media all and (max-width:800px) {
+  .quiz_box button[type='button'] {
+    display: none;
+  }
+}

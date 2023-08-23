@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <header class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="{% url 'student_quizes_page'%}">Quiz ></a>
+          <a href="{% url 'student_quizes_page'%}">Courses ></a>
+          <a href="{% url 'student_get_quizes_schemes_page' scheme.course.slug %}">schemes ></a>
+          <a href="{% url 'student_get_quizes_page' scheme.slug %}">Quizes :</a>
+          <a href=""><i class="material-symbols-outlined">numbers</i> {{scheme.get_quizes.count}}</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Quiz"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <header data-high_scores="{{high_scores}}" data-attempts="{{attempts}}" data-question_num="{{question_num}}">
+      {% for quiz in scheme.get_quizes %}
+        <div class="item" data-name="{{quiz.title}}" data-subject="{{quiz.title}}">
+          <i class="material-symbols-outlined">psychology_alt</i>
+          <span style="font-size: 1.5rem;">{{quiz.title}}</span>
+          <span class="high_score_box"></span>
+          <div class="quiz_data">
+            <p>
+              <span class="q_num_box">40</span>
+              <span>Quest.</span>
+            </p>
+            <p>
+              <i class="material-symbols-outlined">timer</i>
+              <span>{{quiz.duration}} mins</span> 
+            </p>
+            <p>
+              <span class="material-symbols-outlined">history</span>
+              <span class="attempt_box"></span>
+            </p>
+          </div>
+          <div class="item_cover">
+            <a href="{% url 'student_start_quiz_page' quiz.slug %}" class="material-symbols-outlined" style="color: skyblue;">edit</a>
+            <a href="{% url 'student_quiz_history_page' quiz.slug %}" class="material-symbols-outlined" style="color: salmon;">history</a>
+          </div>
+        </div>
+      {% endfor %}
+    </header>
+</section>
+</section>
+
+
+<style>
+  .item{
+    background: #0093ec;
+    color: white;
+  }
+  .progress{
+    background: rgb(6, 225, 116);
+  }
+</style>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  let high_scores = JSON.parse(document.querySelector('.main header').dataset.high_scores)
+  let attempts = JSON.parse(document.querySelector('.main header').dataset.attempts)
+  let question_num = JSON.parse(document.querySelector('.main header').dataset.question_num)
+
+  const high_score_box = document.querySelectorAll('.high_score_box')
+  const attempt_box = document.querySelectorAll('.attempt_box')
+  const q_num_box = document.querySelectorAll('.q_num_box')
+
+  high_scores.forEach((high_score, i) => {
+    if (high_score === 'empty') {
+      high_score_box[i].innerHTML = '--'
+      high_score_box[i].style.color = 'white'
+    } else {
+      var mark_data = gradeMark(high_score)
+      high_score_box[i].style.color = mark_data.color
+      high_score_box[i].innerHTML = `${high_score}%`
+    }
+    attempt_box[i].innerHTML = `${attempts[i]} att.`
+    q_num_box[i].innerHTML = `${question_num[i]}`
+  })
+</script>
+<script>
+  let items = document.querySelectorAll('.item')
+</script>
+<script src="{% static 'Student/student.js' %}"></script>
+{% endblock js %}

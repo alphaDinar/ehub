@@ -1,0 +1,144 @@
+.answer_box {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.answer_box .answer {
+  display: flex;
+  align-items: center;
+  min-width: 50%;
+  min-height: 50px;
+  padding: 3px 0 !important;
+  max-width: 100%;
+  justify-content: space-around;
+  color: darkcyan;
+  border: 1px solid var(--var-bg);
+  background: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
+
+.answer_box .answer small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer_box .answer span {
+  font-size: 1.02rem;
+  word-wrap: break-word;
+  overflow-y: auto;
+  display: inline;
+  min-width: 70%;
+  text-align: center;
+  border-right: 1px dotted white;
+  overflow-x: hidden;
+  border-left: 1px dotted white;
+  padding: 10px;
+  max-width: 85%;
+  max-height: 60px;
+}
+
+.answer_box .answer span::-webkit-scrollbar {
+  width: 5px;
+  background: lightgray;
+  border-radius: 40px;
+}
+
+.answer_box .answer span::-webkit-scrollbar-thumb {
+  background: darkgray;
+  border-radius: 40px;
+}
+
+.answer_box label input:checked+.answer {
+  background: var(--var-bg);
+  border: 1px solid var(--var-bg);
+  color: white;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.answer_box .answer.change {
+  background: var(--var-bg);
+  color: white;
+  border: 1px solid var(--var-bg);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.answer_box .answer.change .ans_rad {
+  background: var(--var-bg);
+  rotate: 360deg;
+}
+
+.answer_box label input {
+  display: none;
+}
+
+.answer_box label {
+  min-width: 35%;
+  width: auto;
+  max-width: 90%;
+}
+
+
+
+.ans_rad {
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.answer_box label input:checked+.answer {
+  background: var(--var-bg);
+  border: 1px solid var(--var-bg);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.answer_box label input:checked+.answer .ans_rad {
+  background: white;
+  rotate: 360deg;
+  color: var(--var-bg);
+}
+
+.answer small,
+.answer label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.answer small {
+  width: 10%;
+}
+
+.question_box {
+  border-bottom: 2px dotted var(--var-bg);
+  text-align: center;
+}
+
+@media all and (max-width:800px) {
+  .answer_box {
+    display: flex;
+    width: 100%;
+  }
+
+  .answer_box label {
+    min-width: 90%;
+  }
+
+  .answer_box .answer {
+    min-width: 100%;
+    min-height: 60px;
+  }
+
+  .answer_box .answer span {
+    min-width: 70%;
+    max-width: 70%;
+  }
+}

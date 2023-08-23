@@ -1,0 +1,309 @@
+:root{
+  --var-theme : #38c7ff
+}
+
+.page {
+  min-height: 100vh;
+}
+
+.main {
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.quiz_box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+}
+
+.sideBar {
+  z-index: 200;
+}
+.sideBar strong{
+  color: wheat;
+}
+
+.sideBar nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.sideBar nav span {
+  cursor: pointer;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  color: white;
+  background: wheat;
+}
+
+.sideBar nav select {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+/* .sideBar button {
+  left: 100%;
+  height: 30px;
+  width: 30px;
+  rotate: 270deg;
+  z-index: 1000;
+  background: wheat;
+  color: black;
+} */
+
+.sideBar.change {
+  left: -5%;
+}
+
+.sideBar .clear_quiz_box {
+  display: flex;
+  flex-direction: column;
+  background: salmon;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.save_quiz_box {
+  background: var(--var-theme);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  color: white;
+}
+
+.main.change {
+  width: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.question_box {
+  width: 90%;
+  padding: 10px;
+  min-height: 80px;
+  max-height: 150px;
+  overflow-y: auto;
+  resize: none;
+  font-size: 1.1rem;
+  border: 2px dotted darkgray;
+}
+
+.answer_box {
+  width: 90%;
+  padding: 10px;
+  display: flex;
+  gap: 0.8rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.question_tag {
+  border-bottom: 1px dotted darkcyan;
+  padding: 10px;
+}
+
+.answer label small {
+  cursor: pointer;
+}
+
+.answer label>input:checked+.ans_rad {
+  background: var(--var-theme);
+  color: white;
+  border: 1px solid white;
+}
+
+.answer {
+  display: flex;
+  width: 95%;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer small {
+  background: white;
+  display: flex;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.answer textarea {
+  border-radius: 2px;
+  font-size: 1.1rem;
+  width: 85%;
+  padding: 5px;
+  resize: none;
+  border: 1px solid darkgray;
+  overflow-y: auto;
+}
+
+textarea::-webkit-scrollbar,
+.page_box::-webkit-scrollbar {
+  width: 6px;
+  height: 3px;
+  border-radius: 40px;
+  background: lightgray;
+}
+
+textarea::-webkit-scrollbar-thumb,
+.page_box::-webkit-scrollbar-thumb {
+  border-radius: 40px;
+  background: darkgray;
+}
+
+
+.answer input[type='radio'] {
+  display: none;
+}
+
+
+label>input[type='checkbox'] {
+  display: none;
+}
+
+.ans_check {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  height: 40px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: rgb(220, 220, 220);
+}
+
+.ans_check i {
+  transition: 0.3s ease;
+  font-weight: 600;
+}
+
+label>input[type='checkbox']:checked+.ans_check {
+  background: var(--var-theme);
+}
+
+label>input[type='checkbox']:checked+.ans_check i {
+  rotate: 90deg;
+}
+
+.swiper-slide button {
+  height: 30px;
+  padding: 5px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(53, 53, 53);
+  color: white;
+  font-size: 1.1rem;
+}
+
+.step_nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remove_question {
+  width: 40px;
+  height: 40px;
+  background: salmon;
+  color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  justify-content: center;
+}
+
+.fill_in span,
+.fill_in small {
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  color: white;
+  border: 1px solid darkgray;
+}
+
+.fill_in span {
+  background: rgb(31, 183, 243);
+}
+
+.fill_in small {
+  color: salmon;
+}
+
+.fill_in {
+  display: flex;
+  gap: 0 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.swiper-slide .fill_in_box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 95%;
+  gap: 2rem;
+}
+
+.fill_in_box input,
+.fill_in_box textarea {
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  max-width: 99%;
+  width: 200px;
+  max-width: 100%;
+  padding: 5px;
+  resize: both;
+}
+
+.fill_in_box textarea {
+  overflow: hidden;
+}
+
+.fill_in_box input {
+  border: 1px solid darkgray;
+}
+
+.fill_in_box textarea {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  border-bottom: 2px solid black;
+}
+
+#fill_in_mode {
+  background: white;
+}

@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/use_quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/start_quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/sideBar_plus.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page" style="align-items: flex-end;">
+  <section class="page_box"></section>
+  <div class="quiz_prompt_box">
+    <span>
+
+    </span>
+    <nav>
+      <i style="background: rgb(19, 209, 114);" id="yes">Yes</i>
+      <i style="background: salmon;" id="no">No</i>
+    </nav>
+  </div>
+
+  <div class="prompt_box">
+    <span>Are you sure you want to delete</span>
+    <i style="color: black; font-weight: 600;">{{assignment.title}}</i>
+    <p>
+      <button style="background: rgb(22, 211, 117);">yes</button>
+      <button style="background: salmon;">No</button>
+    </p>
+  </div>
+
+  <section class="sideBar">
+    <button type="button" id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+    <header>
+      <strong>{{assignment.title}}</strong>
+    </header>
+    <hr>
+    <div class="time_box">
+      <span style="color: ghostwhite;">Current Deadline</span>
+      <p>{{assignment.deadline|date:'D, d M, Y'}} <i class="material-symbols-outlined">event</i></p>
+      <p>{{assignment.deadline|date:'h:i a'}} <i class="material-symbols-outlined">schedule</i> </p>
+    </div>
+    <hr>
+    <!-- <nav> -->
+    <form method="POST">
+      {% csrf_token %}
+      <div>
+        <span>Title</span>
+        <input type="text" name="title" value="{{assignment.title}}" required>
+      </div>
+
+      <style>
+        .sideBar hr {
+          width: 80%;
+          border-top: 2px dotted ghostwhite;
+        }
+
+        .time_box {
+          border: 1px solid black;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        form span {
+          color: white;
+        }
+
+        .time_box p {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          justify-content: center;
+          background: white;
+          box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+          color: darkcyan;
+          padding: 5px;
+          border-radius: 5px;
+        }
+
+        #assignment_countdown {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: ghostwhite;
+        }
+      </style>
+      <div>
+        <span>Set New Deadline</span>
+        <input type="date" name="date" required>
+        <input type="time" name="time" value="08:00" required>
+      </div>
+      <div>
+        <button type="submit" onclick="sessionStorage.clear()">Update</button>
+      </div>
+    </form>
+    <hr>
+
+    <style>
+      .lock_box {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .lock_box i {
+        font-size: 5rem;
+      }
+
+      .lock_box button {
+        padding: 5px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: white;
+      }
+    </style>
+
+    <!-- </nav> -->
+    <div class="quiz_actions quiz_info" data-session="{{quiz_session.time}}">
+      <hr>
+      <a style="color: salmon;" onclick="deleteQuiz(event.target)" class="material-symbols-outlined">delete</a>
+    </div>
+
+
+    <script>
+      toggleAssignment = () => {
+        runAxios('toggle_assignment', ['{{assignment.id}}'])
+      }
+
+
+      const quiz_info = document.querySelector('.quiz_info')
+      const deploy_box = document.querySelector('.deploy_box')
+
+
+
+      if (quiz_info.dataset.session) {
+        deploy_box.style.display = 'flex'
+        let quiz_session = quiz_info.dataset.session.split(',')
+        var targetTime = new Date()
+        targetTime.setHours(quiz_session[0])
+        targetTime.setMinutes(quiz_session[1])
+        targetTime.setSeconds(0)
+        setInterval(() => {
+          runDeployTimer(targetTime)
+        }, 100)
+      }
+    </script>
+
+    <footer>
+      <a href="{% url 'get_assignments_page' assignment.topic.slug %}"
+        class="material-symbols-outlined">arrow_back_ios_new</a>
+    </footer>
+  </section>
+  <section class="main hide" style="align-items: center;">
+    <!-- <a href="{% url 'set_assignment_page' assignment.slug %}" class="q_prompt_box">
+        <span>No Questions Yet</span>
+        <hr>
+        <i class="material-symbols-outlined">psychology_alt</i>
+      </a> -->
+
+
+    <div style="display: flex; flex-direction: column; gap: 0.8rem; align-items: center;">
+      <div class="lock_box">
+        {% if assignment.protection == 'locked' %}
+        <i class="material-symbols-outlined" style="color: salmon;">lock</i>
+        <button style="background: #38c7ff;" onclick="UnlockAssignment()">Unlock</button>
+        {% else %}
+        <i class="material-symbols-outlined" style="color: #38c7ff;">lock_open_right</i>
+        <button style="background: salmon;" onclick="lockAssignment()">Lock</button>
+        {% endif %}
+      </div>
+      <i class="material-symbols-outlined" style="font-weight: 600;">timer</i>
+      <span id="assignment_countdown" style="color: black;"></span>
+    </div>
+
+    <section data-json="{{assignment.con}}" class="quiz_box swiper" onsubmit="run(event)">
+      <div class="swiper-wrapper"></div>
+    </section>
+    <div class="quiz_box_nav">
+      <i class="material-symbols-outlined quiz_box_prev">chevron_left</i>
+      <i class="material-symbols-outlined quiz_box_next">chevron_right</i>
+    </div>
+    <div class="mark_box">
+
+    </div>
+  </section>
+</section>
+
+
+
+<style>
+  .main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+
+<script>
+  const prompt_box = document.querySelector('.prompt_box')
+
+  const deleteQuiz = (a_tag) => {
+    prompt_box.classList.add('show');
+    [...prompt_box.children[2].children].forEach((el, i) => {
+      el.onclick = () => {
+        if (i === 0) {
+          console.log(a_tag)
+          a_tag.href = '{% url "delete_assignment_page" assignment.slug %}'
+          window.location.href = a_tag.href
+          console.log(el)
+        } else {
+          prompt_box.classList.remove('show')
+        }
+      }
+    })
+  }
+
+</script>
+{% endblock page %}
+
+
+{% block response %}
+<script>
+  const handleData = (response) => {
+    window.location.reload()
+  }
+</script>
+{% endblock response %}
+
+{% block js %}
+<script>
+  var djangoDateTimeValue = '{{ assignment.deadline|date:"c" }}';
+  const assignment_countdown = document.getElementById('assignment_countdown')
+
+  runTimer = () => {
+    var jsDateValue = new Date(djangoDateTimeValue);
+
+    var today = new Date()
+    var timeLeft = jsDateValue - today;
+
+    var daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    var hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    if (hoursLeft < 10) {
+      hoursLeft = `0${hoursLeft}`
+    }
+    var minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    if (minutesLeft < 10) {
+      minutesLeft = `0${minutesLeft}`
+    }
+    var secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    if (secondsLeft < 10) {
+      secondsLeft = `0${secondsLeft}`
+    }
+
+    if (timeLeft > 0) {
+      if (daysLeft > 0) {
+        assignment_countdown.innerHTML = `${daysLeft} days | ${hoursLeft}: ${minutesLeft} : ${secondsLeft}`
+      } else {
+        assignment_countdown.innerHTML = `${hoursLeft}: ${minutesLeft} : ${secondsLeft}`
+      }
+    } else {
+      assignment_countdown.innerHTML = `00: 00 : 00`
+    }
+
+  }
+  setInterval(() => {
+    runTimer()
+  }, 100)
+</script>
+<script>
+  const quiz_prompt_box = document.querySelector('.quiz_prompt_box')
+
+  UnlockAssignment = () => {
+    quiz_prompt_box.children[0].innerHTML = `Are you sure you want to Unlock Assignment <br><i><small>This gives access to students</small></i>`
+    quiz_prompt_box.classList.add('show')
+    quiz_prompt_box.onclick = (event) => {
+      if (event.target.id === 'yes') {
+        // sessionStorage.clear()
+        runAxios('toggle_assignment', ['{{assignment.id}}'])
+      } else if (event.target.id === 'no') {
+        quiz_prompt_box.classList.remove('show')
+      }
+    }
+  }
+
+  lockAssignment = () => {
+    quiz_prompt_box.children[0].innerHTML = `Are you sure you want to cancel Deploy<br><i><small>This will lock the Quiz</small></i>`
+    quiz_prompt_box.classList.add('show')
+    quiz_prompt_box.onclick = (event) => {
+      if (event.target.id === 'yes') {
+        // sessionStorage.clear()
+        runAxios('toggle_assignment', ['{{assignment.id}}'])
+      } else if (event.target.id === 'no') {
+        quiz_prompt_box.classList.remove('show')
+      }
+    }
+  }
+</script>
+
+<script src="{% static 'Quiz/start_quiz.js' %}"></script>
+<script>
+  let quiz_con = JSON.parse('{{assignment.con | safe}}')
+</script>
+<script src="{% static 'Quiz/createQuiz.js' %}"></script>
+<script>
+  submitQuiz =(obj)=>{
+    console.log(obj)
+  }
+</script>
+{% endblock js %}

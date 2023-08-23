@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'log.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <nav>
+    <strong>Edumanager</strong>
+    <div id="blur">
+      <a id="trigger"><i class="material-symbols-outlined">more_vert</i> Student</a>
+      <a id="trigger"><i class="material-symbols-outlined">more_vert</i> Teacher</a>
+      <a id="trigger"><i class="material-symbols-outlined">more_vert</i> Manager</a>
+      <a href=""><i class="material-symbols-outlined">more_vert</i> Contact</a>
+    </div>
+  </nav>
+  <section class="head_box">
+    <article>
+      <!-- <span>Your Ultimate Teaching App Solution!</span>
+      <p>Are you a passionate educator looking to take your teaching methods to new heights? Look no further!
+        TeachWise, Edumanager is here to transform the way you engage and educate your students. </p> -->
+      <div>
+        <a id="trigger" style="border: 1px solid #39c7ff;">Login</a>
+        <!-- <a id="trigger" style="border: 1px solid #e58090;">Teacher</a> -->
+      </div>
+    </article>
+    <div class="image_box" id="blur2">
+      <div class="box" style="background-image: url(https://res.cloudinary.com/dvnemzw0z/image/upload/v1683803753/bag_nobtj4.jpg);"></div>
+    </div>
+  </section>
+  <!-- <section class="low_box">
+    <div class="con">
+      <div class="material-symbols-outlined" style="background: #e58090;">family_restroom</div>
+      <span>Parental Involvement</span>
+      <p>Foster strong parent-teacher collaboration by providing parents with access to their child's
+        grades,attendance, and academic updates</p>
+    </div>
+    <div class="con">
+      <div class="material-symbols-outlined" style="background: skyblue;">lock</div>
+      <span>Secure and Private</span>
+      <p>We prioritize the security and privacy of all users. Our app incorporates robust data encryption and follows
+        strict privacy protocols,</p>
+    </div>
+    <div class="con" id="blur">
+      <div class="material-symbols-outlined" style="background: salmon;">privacy_tip</div>
+      <span>Support and Training</span>
+      <p>We provide comprehensive support and training to ensure a smooth implementation and adoption of our app.</p>
+    </div>
+    <div class="con" id="blur">
+      <div class="material-symbols-outlined" style="background: #39c7ff;">monitoring</div>
+      <span>Progress Tracking and Analytics</span>
+      <p>Monitor student progress and performance with our app's robust tracking and analytics tools. Teachers can
+        generate reports.</p>
+    </div>
+  </section> -->
+  <section class="form_box">
+    <div class="form_close material-symbols-outlined" onclick="closeForm()">close</div>
+    <form method="post">
+      {% csrf_token %}
+      {% if messages %}
+        {% for message in messages %}
+        <span class="m_box">{{message}}</span>
+        {% endfor %}
+      {% endif %}
+      <i class="material-symbols-outlined">verified_user</i>
+      <div class="con">
+        <div class="input_field">
+          <span>Username</span>
+          <input type="text" name="username">
+        </div>
+        <div class="input_field">
+          <span>Password</span>
+          <input type="password" name="password">
+        </div>
+      </div>
+      <button type="submit" class="material-symbols-outlined">login</button>
+    </form>
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const form_box = document.querySelector('.form_box')
+  const blur_div = document.querySelectorAll('[id="blur"]')
+  const blur2 = document.getElementById('blur2')
+  const trigger = document.querySelectorAll('[id="trigger"]')
+
+  trigger.forEach(el => {
+    el.onclick = () => {
+      form_box.classList.add('change')
+      blur_div.forEach(div => {
+        div.classList.add('change')
+      })
+      blur2.classList.add('change')
+      document.querySelector('nav').classList.add('change')
+      document.querySelector('.head_box').classList.add('change')
+      document.querySelector('.low_box').classList.add('change')
+    }
+  })
+
+  const closeForm = () => {
+    form_box.classList.remove('change')
+    blur_div.forEach(div => {
+      div.classList.remove('change')
+    })
+    blur2.classList.remove('change')
+    document.querySelector('nav').classList.remove('change')
+    document.querySelector('.head_box').classList.remove('change')
+    document.querySelector('.low_box').classList.remove('change')
+  }
+</script>
+{% endblock js %}

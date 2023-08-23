@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  <!-- <style>
+    .prompt_box{
+
+    }
+  </style> -->
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        {% csrf_token %}
+        <input type="text" name="type" style="display: none;" id="in_type">
+        <input type="text" name="first_name" placeholder="First Name" required>
+        <input type="text" name="last_name" placeholder="Last Name" required>
+        <input type="text" name="name" style="display: none;">
+        <button type="submit">+</button>
+      </form>
+    </section>
+
+    <header>
+      <Strong><i class="material-symbols-outlined">blur_on</i> Students | {{grade}}</Strong>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+      <button type="button" onclick="showForm('new')"> + Add Student</button>
+    </header>
+
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+    <section class="student_list">
+      <div class="head">
+        <small>#</small>
+        <span>Username</span>
+        <span>First Name</span>
+        <span>Last Name | Password</span>
+        <small class="material-symbols-outlined">edit</small>
+        <small class="material-symbols-outlined">delete</small>
+      </div>
+
+
+
+      {% for student in grade.get_students %}
+      <div class="student_row" data-name="{{student.name}}" data-last_name="{{student.last_name}}"
+        data-full_name="{{student.first_name}} {{student.last_name}}">
+        <small class="sr_tag">{{forloop.counter}}</small>
+        <span>{{student.name}}</span>
+        <span>{{student.first_name}}</span>
+        <span>{{student.last_name}}</span>
+        <button class="material-symbols-outlined edit_student" data-first_name="{{student.first_name}}"
+          data-last_name="{{student.last_name}}" data-name="{{student}}"
+          onclick="showForm('old', event.target)">edit</button>
+        <button data-name="{{student.name}}" class="material-symbols-outlined del_student">delete</button>
+      </div>
+      {% endfor %}
+    </section>
+
+    <script>
+      const add_form = document.querySelector('.add_form')
+      const register_form = document.querySelector('.add_form form')
+      const in_type = document.getElementById('in_type')
+
+      closeForm = () => {
+        add_form.classList.remove('change')
+      }
+
+
+      showForm = (val, event) => {
+        if (val == 'new') {
+          register_form.children[3].value = ''
+          register_form.children[4].value = ''
+          in_type.value = 'new'
+        } else {
+          in_type.value = 'old'
+          register_form.children[3].value = event.dataset.first_name
+          register_form.children[4].value = event.dataset.last_name
+          register_form.children[5].value = event.dataset.name
+        }
+        add_form.classList.add('change')
+      }
+    </script>
+  </section>
+</section>
+
+<style>
+  .main {
+    align-items: center;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+</style>
+{% endblock page %}
+
+{% block response %}
+<script>
+  handleData = (data) => {
+    console.log(data.data)
+  }
+</script>
+{% endblock response %}
+
+
+{% block js %}
+<script>
+  const grades = document.querySelectorAll('.student_row')
+  const del_student = document.querySelectorAll('.del_student')
+  const prompt_box = document.querySelector('.prompt_box')
+
+  del_student.forEach((del, i) => {
+    del.onclick = () => {
+      prompt_box.children[1].innerHTML = del.dataset.name
+      prompt_box.classList.add('show')
+      prompt_box.children[2].onclick = (event) => {
+        if (event.target.id === 'no') {
+          prompt_box.classList.remove('show')
+        } else {
+          runAxios('super_delete_user', del.dataset.name, '{{token}}')
+          anime({
+            target: del.parentElement,
+            translateX: [-30, 0],
+            opacity: [1, 0],
+            duration: 500,
+            complete: () => {
+              del.parentElement.remove()
+            }
+          })
+          prompt_box.classList.remove('show')
+        }
+      }
+    }
+  })
+
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val) && !grade.dataset.last_name.toLowerCase().includes(val) && !grade.dataset.full_name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+
+<script src="{% static 'Super/anime.js' %}"></script>
+
+{% endblock js %}

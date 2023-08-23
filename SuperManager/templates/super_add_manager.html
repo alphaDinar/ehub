@@ -1,0 +1,39 @@
+{% extends "super_add_teacher.html" %}
+
+{% block List %}
+<section class="student_list">
+  <div class="teacher_row" style="border-bottom: 2px dotted darkcyan; padding: 10px 0; font-weight: 600;">
+    <small>#</small>
+    <span>Username</span>
+    <span>Password</span>
+    <div class="course_list">
+      Courses
+    </div>
+    <button class="material-symbols-outlined">edit</button>
+    <button class="material-symbols-outlined">delete</button>
+  </div>
+
+  {% for manager in managers %}
+  <div class="teacher_row">
+    <small>{{forloop.counter}}</small>
+    <span>{{manager}}</span>
+    <span>{{manager.password}}</span>
+    <div class="course_list">
+      {% for course in manager.get_courses %}
+      <small data-course="{{course.id}}">{{course}}</small>
+      {% endfor %}
+    </div>
+    <button class="material-symbols-outlined edit_student" onclick="showForm('old',event.target)" data-username="{{manager}}"
+      data-password="{{manager.password}}">edit</button>
+    <button class="material-symbols-outlined del_student" onclick="delTeacher(event.target,'{{manager}}')">delete</button>
+  </div>
+  {% endfor %}
+</section>
+
+
+<script>
+  document.querySelector('header span').innerHTML = '<i class="material-symbols-outlined">blur_on</i> Managers'
+  document.querySelector('header button').innerHTML = 'Add Manager'
+</script>
+
+{% endblock List %}

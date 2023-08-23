@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/get_quizes.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'sideBar.html' %}
+  <section class="main toggle">
+    <section class="con">
+      <form>
+        <div>
+          <i class="material-symbols-outlined">blur_on</i>
+          <span> <a style="color: white;" href="{% url 'quizes_page' scheme.course.slug %}">Quizes</a>  > {{scheme.topic}} Quizes | {{scheme.get_quizes.count}}</span>
+        </div>
+        <input type="text" id="item_in">
+        <select id="item_select">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+        </select>
+        <div class="button" onclick="show_add_quiz()">+</div>
+      </form>
+
+      <div class="scheme_box">
+        {% for quiz in scheme.get_quizes %}
+        <div class="scheme_hold" id="item" data-name="{{quiz.title}}" data-status="{{quiz.status}}">
+          <a href="{% url 'assess_quiz_page' quiz.slug %}" class="assess_scheme">
+            <i class="material-symbols-outlined">analytics</i>
+          </a>
+          <a href="{% url 'use_quiz_page' quiz.slug %}" class="scheme" style="text-align: center;">
+            <i class="material-symbols-outlined">psychology_alt</i>
+            <span style="text-align: center;">{{quiz.title}}</span>
+            <p style="background: #acedc2;"></p>
+            <small style="text-align: center;">{{quiz.duration}} mins.</small>
+          </a>
+          <a href="{% url 'set_quiz_page' quiz.slug %}" class="edit_scheme">
+            <i class="material-symbols-outlined">settings</i>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <form class="add_quiz" method="post">
+      {% csrf_token %}
+      <i class="material-symbols-outlined" onclick="close_add_quiz()" id="close_add_quiz">close</i>
+      <section>
+        <i class="material-symbols-outlined">psychology_alt</i>
+        <div class="input_field">
+          <span>Title</span>
+          <input type="text" name="title" required>
+        </div>
+        <button type="submit">ADD</button>
+      </section>
+    </form>
+  </section>
+</section>
+{% endblock page %}
+
+{% block js %}
+<script src="{% static 'Quiz/get_quizes.js' %}"></script>
+{% endblock js %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="">Events</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Event"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <section class="events">
+      {% for event in quick_events %}
+      <div class="event_tab" style="background: {{event.color}};" data-start_date="{{event.start_date|date:'c'}}">
+        <span style="font-size: 1.3rem;"> {{event}}</span>
+        <hr style="width: 70%; border-top: 2px dotted white;">
+        <span class="event_countdown"></span>
+      </div>
+      {% endfor %}
+    </section>
+
+
+    <nav></nav>
+
+    <section style="width: 100%;">
+      <div id='calendar' style="width: 100%;"></div>
+    </section>
+  </section>
+
+</section>
+
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const events = document.querySelectorAll('.event_tab')
+  const event_countdown = document.querySelectorAll('.event_countdown')
+
+  runEventTimer = () => {
+    var today = new Date()
+    events.forEach((event, i) => {
+      var event_start_date = event.dataset.start_date
+      var timeLeftData = getTimeLeft(event_start_date, today, event_countdown[i])
+      // if (timeLeftData.timeLeft < 1) {
+      //   event.remove()
+      // }
+    }
+    )
+  }
+
+  setInterval(()=>{
+    runEventTimer()
+  },100)
+</script>
+
+<script>
+  let events_json = JSON.parse('{{events|safe}}')
+
+  fixCalendarEvents = (calendar) => {
+    events_json.forEach(event => {
+      var event_obj = {
+        title: event.name,
+        start: event.start_date.split(' ')[0] + 'T' + event.start_date.split(' ')[1],
+        end: event.end_date.split(' ')[0] + 'T' + event.end_date.split(' ')[1],
+        backgroundColor: event.color,
+        borderColor: 'transparent'
+      };
+      calendar.addEvent(event_obj);
+    })
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth'
+    });
+    calendar.render();
+    fixCalendarEvents(calendar)
+  });
+</script>
+{% endblock js %}

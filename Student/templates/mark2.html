@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    {{student.grade}}
+    <br><br>
+    <p class="course_row">
+      {% for course in student.grade.get_courses %}
+      <div class="course" data-course="{{course.id}}">{{course}}</div>
+      {% endfor %}
+    </p>
+      
+  </div>
+  <br><br>
+  <div class="user_row">
+    <p>
+      {% for score in student.get_scores %}
+      <small data-course="{{score.quiz.topic.course.id}}" data-score="{{score.mark}}">-- {{score}} --</small>
+      {% endfor %}
+    </p>
+  </div>
+  <br><br><br><br>
+
+  <div class="user_out_box">
+
+  </div>
+
+</body>
+</html>
+
+<script>
+  const user_marks = document.querySelector('.user_row p');
+  const courses = document.querySelectorAll('.course');
+  const user_out_box = document.querySelector('.user_out_box')
+
+  courses.forEach(course=>{
+    var user_out_div = document.createElement('div')
+    user_out_div.classList.add('user_out_div')
+    user_out_box.appendChild(user_out_div)
+  });
+
+  const user_out = document.querySelectorAll('.user_out_div'); 
+  let mark_box = [[],[]];
+  [...user_marks.children].forEach(mark=>{ 
+    courses.forEach((course,i)=>{
+      if(mark.dataset.course === course.dataset.course){
+        mark_box[i].push(mark.dataset.score)
+      }
+    })
+  })
+
+  user_out.forEach((out,i)=>{
+    var total = 0
+    mark_box[i].forEach(mark=>{
+      total = total + parseFloat(mark)
+    })
+    total = total / mark_box[i].length
+    user_out[i].innerHTML = total
+  })
+
+</script>
+
+
+<style>
+  .user_out_div{
+    min-width: 100px;
+    min-height: 50px;
+    border: 2px solid skyblue;
+  }
+</style>

@@ -1,0 +1,33 @@
+
+.prompt_box,
+.edit_screen .m_box,
+.del_prompt_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 250px;
+  height: 100px;
+  padding: 15px;
+  right: -280px;
+  background: rgb(33, 189, 250);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  color: white;
+  border-radius: 0 0 0 40px;
+  z-index: 50;
+  transition: 0.4s ease;
+  overflow-y: auto;
+}
+
+.del_prompt_box {
+  gap: 1rem;
+}
+
+.prompt_box.show,
+.del_prompt_box.show,
+.edit_screen .m_box.show {
+  right: 0;
+}

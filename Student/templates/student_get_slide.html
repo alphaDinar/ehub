@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/get_scheme.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/edit_scheme.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/sideBar_plus.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <section class="sideBar">
+    <button type="button" id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+    <header>
+      <strong>{{scheme.topic}}</strong>
+    </header>
+    <nav data-progress_json="{{scheme_progress_json}}" data-progress_count="{{scheme_progress_count}}">
+      <span><i class="material-symbols-outlined">slideshow</i> Slides <i
+          class="material-symbols-outlined">chevron_right</i></span>
+      <!-- <p> -->
+      <div onclick="toggleTLM()" style="text-align: center; display: flex;align-items: center;"><i
+          class="material-symbols-outlined">cast_for_education</i> Teacher Learning Materials <i
+          class="material-symbols-outlined">chevron_right</i></div>
+      <div class="tlm_con">
+        <span><i class="material-symbols-outlined">image</i> Images <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">videocam</i> Video <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">description</i> Passage <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">picture_as_pdf</i> PDF <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">bookmark</i> Reference <i
+            class="material-symbols-outlined">chevron_right</i></span>
+      </div>
+      <span><i class="material-symbols-outlined">history</i> Past resources <i
+          class="material-symbols-outlined">chevron_right</i></span>
+      <!-- </p> -->
+    </nav>
+    <style>
+      .tlm_con {
+        display: none;
+        flex-direction: column;
+        /* align-items: center; */
+        cursor: pointer;
+        gap: 0.5rem;
+        position: relative;
+      }
+
+      .sideBar nav span {
+        display: flex;
+        gap: 0 0.5rem;
+        align-items: center;
+      }
+
+      .tlm_con.change {
+        display: flex;
+      }
+    </style>
+
+    <script>
+      const tlm_con = document.querySelector('.tlm_con')
+      toggleTLM = () => {
+        tlm_con.classList.toggle('change')
+      }
+    </script>
+
+    <section class="scheme_progress">
+      <div class="progress_bar">
+        <div class="progress"></div>
+      </div>
+
+      <span>0 %</span>
+    </section>
+
+
+    <style>
+      .sideBar nav {
+        height: auto !important;
+      }
+
+      .scheme_progress {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem 0;
+      }
+
+      .scheme_progress span {
+        font-size: 2rem;
+        font-weight: 600;
+        border-bottom: 1px solid black;
+      }
+
+      .progress_bar {
+        width: 200px;
+        height: 8px;
+        border-radius: 40px;
+        background: lightgray;
+        position: relative;
+      }
+
+      .progress {
+        position: absolute;
+        left: 0;
+        width: 10px;
+        height: 100%;
+        transition: 0.4s ease;
+        border-radius: 40px;
+        background: #38c7ff;
+      }
+    </style>
+
+    <footer>
+      <a href="{% url 'student_get_slides_schemes_page' scheme.course.slug %}"
+        class="material-symbols-outlined">arrow_back_ios_new</a>
+    </footer>
+  </section>
+  <section class="main hide">
+    <section class="edit_screen swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Slides</span>
+            <input type="text" class="slide_search">
+          </div>
+          <div class="res_edit_box">
+            {% for slide in scheme.get_slides %}
+            <div class="res" id="slide_res" data-id="{{slide.id}}" data-type="slide" data-con="{{slide.con}}"
+              data-name="{{slide.title}}" data-count="{{forloop.counter}}">
+              <div class="material-symbols-outlined">slideshow</div>
+              <span>{{slide.title}}</span>
+              <p id="tag"></p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Images</span>
+            <input type="text" class="image_search">
+          </div>
+          <div class="res_edit_box">
+            {% for image in scheme.get_images %}
+            <div class="res" id="image_res" data-id="{{image.id}}" data-type="image" data-name="{{image.name}}"
+              data-src="{{image.image.url}}">
+              <div style="background-image: url({{image.image.url}});"></div>
+              <span>{{image.name}} {{image.id}}</span>
+              <!-- <p id="tag"></p> -->
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Videos</span>
+            <input type="text" class="video_search">
+          </div>
+          <div class="res_edit_box">
+            {% for video in scheme.get_videos %}
+            <div class="res" id="video_res" data-id="{{video.id}}" data-type="video" data-name="{{video.name}}"
+              data-src="{{video.video.url}}">
+              <video src="{{video.video.url}}"></video>
+              <span>{{video.name}}</span>
+              <!-- <p id="tag"></p> -->
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Passages</span>
+            <input type="text" class="passage_search">
+          </div>
+          <div class="res_edit_box">
+            {% for passage in scheme.get_passages %}
+            <div class="res" id="passage_res" data-id="{{passage.id}}" data-type="passage" data-name="{{passage.title}}"
+              data-body="{{passage.body}}">
+              <div style="background-image: url({{passage.thumb.url}});"></div>
+              <span>{{passage.title}}</span>
+              <!-- <p id="tag"></p> -->
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>PDF</span>
+            <input type="text" class="slide_search">
+          </div>
+          <div class="res_edit_box">
+            {% for pdf in scheme.get_pdfs %}
+            <a href="{{pdf.pdf.url}}" class="pdf_res" target="_blank" id="pdf_res" data-id="{{pdf.id}}"
+              data-name="{{pdf}}">
+              <div
+                style="background-image: url(https://res.cloudinary.com/dvnemzw0z/image/upload/v1685608527/a2eb80ff08a23b6f4c828da0b0d74f5e_t_rkjtf9.jpg);">
+              </div>
+              <span>{{pdf}}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="display">
+      <div onclick="closeDisplay()" class="close_display material-symbols-outlined">close</div>
+    </section>
+  </section>
+
+  <section class="rate_box">
+    <!-- <h3>Rate Your Experience</h3> -->
+  </section>
+  <style>
+    .rate_box {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      justify-content: space-around;
+    }
+
+    .rate_box div {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 150px;
+      border-radius: 50%;
+      height: 150px;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      /* background: black; */
+      box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+
+    .rate_box div:hover {
+      background: #38c7ff;
+    }
+
+    .rate_box div:hover i {
+      color: white !important;
+    }
+
+    .rate_box div:hover span {
+      color: white;
+    }
+    .rate_box div:hover a{
+      color: white;
+    }
+
+    .rate_box div i {
+      border-radius: 50%;
+      padding: 5px;
+      font-size: 3.5rem;
+      transition: 0.2s ease;
+    }
+
+    .rate_box div span {
+      color: rgb(97, 97, 97);
+      transition: 0.2s ease;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+  </style>
+</section>
+
+
+<style>
+  .res {
+    position: relative;
+  }
+
+  .res #tag {
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    background: salmon;
+  }
+
+  .close_display {
+    padding: 5px;
+    border-radius: 3px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: salmon;
+    color: white;
+    z-index: 30;
+    cursor: pointer;
+  }
+
+  .display {
+    position: absolute;
+    display: none;
+    width: 100%;
+    padding: 5vh 0;
+    min-height: 90vh;
+    top: 0;
+    background: white;
+    align-items: center;
+    flex-direction: column;
+    z-index: 50;
+  }
+
+  .display.change {
+    display: flex;
+  }
+
+  .main {
+    position: relative !important;
+  }
+</style>
+
+
+<style>
+  .res_edit_box .res,
+  .pdf_res {
+    height: max-content;
+    padding-bottom: 20px;
+    border-radius: 10px;
+    justify-content: flex-start !important;
+  }
+
+  .res_edit_box .res div,
+  .res_edit_box .res video,
+  .pdf_res div {
+    height: 100px !important;
+  }
+
+  .image_box,
+  .video_box {
+    background-position: center;
+    background-size: cover;
+    width: 90%;
+    height: 90vh;
+  }
+
+  .passage_title {
+    height: 10%;
+    overflow-y: auto;
+    width: 90%;
+    padding: 0 5%;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    font-weight: 600;
+  }
+
+  .passage_body {
+    height: 86%;
+    overflow-y: auto;
+    width: 70%;
+    padding: 2% 15%;
+    font-size: 1.5rem;
+    text-align: center;
+    background: white;
+  }
+</style>
+
+
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const progress_json = JSON.parse(document.querySelector('.sideBar nav').dataset.progress_json)
+  var progress_count = Math.round(document.querySelector('.sideBar nav').dataset.progress_count)
+</script>
+<script>
+  const res_box = document.querySelector('.res_edit_box')
+  const resources = document.querySelectorAll('.res')
+  const display_box = document.querySelector('.display')
+
+  const progress_bar = document.querySelector('.progress_bar')
+  const progress = document.querySelector('.progress')
+
+  const slides = document.querySelectorAll('[id="slide_res"]')
+
+  progress.style.width = `${progress_count}%`
+  progress_bar.nextElementSibling.innerHTML = `${progress_count} %`
+
+  slides.forEach((slide, i) => {
+    if (progress_json[i].status === 'pending') {
+      slide.children[2].style.background = 'tomato'
+    } else {
+      slide.children[2].style.background = '#38c7ff'
+    }
+  })
+
+  handleData = (data) => {
+    if (data.data.progress_count) {
+      progress.style.width = `${Math.round(data.data.progress_count)}%`
+      progress_bar.nextElementSibling.innerHTML = `${Math.round(data.data.progress_count)} %`
+    }
+  }
+
+  handleSlideRatings = (rate_slide) => {
+    [...rate_slide.children].forEach(rate => {
+      rate.onclick = () => {
+        runAxios('rate_scheme', ['{{scheme.id}}', rate.dataset.rate])
+        window.location.href = `/student_get_quizes_schemes/{{scheme.course.slug}}`
+      }
+    })
+  }
+
+  console.log(progress_count)
+
+  checkSlide = (slide_swiper, slide_swiper_el, res, wrapper) => {
+    slide_swiper.on('slideNextTransitionStart', () => {
+      [...slide_swiper_el.children[2].children].forEach(slide => {
+        if (slide.classList.contains('swiper-slide-active')) {
+          if (slide.innerHTML === 'End of Slide') {
+            if (res.nextElementSibling) {
+              slide_swiper_el.remove()
+              display_box.classList.remove('change')
+              runAxios('toggle_res_status', ['{{scheme.id}}', res.dataset.type, res.dataset.id])
+              deploySlide(res.nextElementSibling)
+              display_box.classList.add('change')
+            } else {
+              slide.innerHTML = 'End of Scheme'
+              if (progress_count < 100) {
+                var rate_slide = document.createElement('div')
+                rate_slide.classList.add('swiper-slide')
+                rate_slide.classList.add('rate_box')
+                rate_slide.innerHTML = `
+              <div data-rate="1">
+                <i class="material-symbols-outlined" style="color: tomato;">dangerous</i>
+                <a>Bad</a>
+              </div>
+              <div data-rate="2.5">
+                <i class="material-symbols-outlined" style="color: orange">sentiment_neutral</i>
+                <a>Okay</a>
+              </div>
+
+              <div data-rate="4">
+                <i class="material-symbols-outlined" style="color: rgb(22, 213, 117);">check</i>
+                <a>Good</a>
+              </div>
+
+              <div data-rate="5">
+                <i class="material-symbols-outlined" style="color: rgb(11, 239, 125);">verified</i>
+                <a>Very Good</a>
+              </div>
+              `
+                runAxios('toggle_res_status', ['{{scheme.id}}', res.dataset.type, res.dataset.id])
+                handleSlideRatings(rate_slide)
+                wrapper.appendChild(rate_slide)
+                makeSlideSwiper(res, wrapper)
+              }
+
+            }
+            res.children[2].style.background = '#38c7ff'
+          }
+        }
+      })
+    })
+  }
+
+  makeSlideSwiper = (res, wrapper) => {
+    var slide_swiper = new Swiper('.slide_swiper', {
+      loop: false,
+      speed: 1000,
+      navigation: {
+        nextEl: '.slide_swiper_next',
+        prevEl: '.slide_swiper_prev',
+      },
+    })
+    checkSlide(slide_swiper, slide_swiper.el, res, wrapper)
+  }
+
+  deploySlide = (res) => {
+    var slide_swiper = document.createElement('section')
+    slide_swiper.classList.add('slide_swiper')
+    slide_swiper.classList.add('swiper')
+    display_box.appendChild(slide_swiper)
+    var slide_swiper_next = document.createElement('button')
+    slide_swiper_next.classList.add('slide_swiper_next')
+    slide_swiper_next.classList.add('material-symbols-outlined')
+    slide_swiper_next.innerHTML = 'chevron_right'
+    slide_swiper.appendChild(slide_swiper_next)
+    var slide_swiper_prev = document.createElement('button')
+    slide_swiper_prev.classList.add('slide_swiper_prev')
+    slide_swiper_prev.classList.add('material-symbols-outlined')
+    slide_swiper_prev.innerHTML = 'chevron_left'
+    slide_swiper.appendChild(slide_swiper_prev)
+    var slide_swiper_wrapper = document.createElement('div')
+    slide_swiper_wrapper.classList.add('swiper-wrapper')
+    slide_swiper.appendChild(slide_swiper_wrapper)
+    var intro_slide = document.createElement('div')
+    intro_slide.classList.add('swiper-slide')
+    intro_slide.classList.add('intro_slide')
+    intro_slide.classList.add('con_slide')
+    intro_slide.innerHTML = res.dataset.name
+    slide_swiper_wrapper.appendChild(intro_slide)
+    let slide_res = JSON.parse(res.dataset.con)
+    slide_res.forEach(slide_data => {
+      if (slide_data.type === 'image_res') {
+        document.querySelectorAll('[id="image_res"]').forEach(mini_res => {
+          if (slide_data.id === mini_res.dataset.id) {
+            var image_slide = document.createElement('div')
+            image_slide.classList.add('con_slide')
+            image_slide.classList.add('swiper-slide')
+            image_slide.style.backgroundImage = `url(${mini_res.dataset.src})`
+            slide_swiper_wrapper.appendChild(image_slide)
+            var slide_tag = document.createElement('span')
+            slide_tag.innerHTML = (mini_res.dataset.name).toUpperCase()
+            slide_tag.id = 'slide_tag'
+            image_slide.appendChild(slide_tag)
+          }
+        })
+      } else if (slide_data.type === 'video_res') {
+        document.querySelectorAll('[id="video_res"]').forEach(mini_res => {
+          if (slide_data.id === mini_res.dataset.id) {
+            var video_slide = document.createElement('video')
+            video_slide.src = mini_res.dataset.src
+            video_slide.classList.add('con_slide')
+            video_slide.classList.add('swiper-slide')
+            video_slide.muted = true
+            video_slide.controls = true
+            slide_swiper_wrapper.appendChild(video_slide)
+            var slide_tag = document.createElement('span')
+            slide_tag.innerHTML = (mini_res.dataset.name).toUpperCase()
+            slide_tag.id = 'slide_tag'
+            video_slide.appendChild(slide_tag)
+          }
+        })
+      } else if (slide_data.type === 'passage_res') {
+        document.querySelectorAll('[id="passage_res"]').forEach(mini_res => {
+          if (slide_data.id === mini_res.dataset.id) {
+            var passage_slide = document.createElement('div')
+            passage_slide.classList.add('con_slide')
+            passage_slide.classList.add('swiper-slide')
+            var title = document.createElement('span')
+            title.innerHTML = mini_res.dataset.name
+            title.classList.add('passage_title')
+            passage_slide.appendChild(title)
+            var body = document.createElement('p')
+            body.innerHTML = mini_res.dataset.body
+            body.classList.add('passage_body')
+            passage_slide.appendChild(body)
+            slide_swiper_wrapper.appendChild(passage_slide)
+          }
+        })
+      }
+    })
+    var outro_slide = document.createElement('div')
+    outro_slide.classList.add('swiper-slide')
+    outro_slide.classList.add('intro_slide')
+    outro_slide.classList.add('con_slide')
+    outro_slide.innerHTML = 'End of Slide'
+    slide_swiper_wrapper.appendChild(outro_slide)
+    makeSlideSwiper(res, slide_swiper_wrapper)
+  }
+
+  resources.forEach(res => {
+    res.onclick = () => {
+      display_box.innerHTML = ''
+      display_box.innerHTML = `<div onclick="closeDisplay()" class="close_display material-symbols-outlined">close</div>`
+      if (res.id === 'image_res') {
+        var image_box = document.createElement('img')
+        image_box.src = res.dataset.src
+        image_box.classList.add('image_box')
+        display_box.appendChild(image_box)
+      } else if (res.id == 'video_res') {
+        var video_box = document.createElement('video')
+        video_box.src = res.dataset.src
+        video_box.controls = true
+        video_box.classList.add('video_box')
+        display_box.appendChild(video_box)
+      } else if (res.id == 'passage_res') {
+        var title = document.createElement('span')
+        title.innerHTML = res.dataset.name
+        title.classList.add('passage_title')
+        display_box.appendChild(title)
+        var body = document.createElement('p')
+        body.innerHTML = res.dataset.body
+        body.classList.add('passage_body')
+        display_box.appendChild(body)
+      } else if (res.id == 'slide_res') {
+        deploySlide(res)
+      }
+      display_box.classList.add('change')
+      // if (res.children[2].style.background === 'salmon') {
+      //   res.children[2].style.background = '#38c7ff'
+      // }
+      // runAxios('toggle_res_status', ['{{scheme.id}}', res.dataset.type, res.dataset.id])
+    }
+  })
+
+
+
+  closeDisplay = () => {
+    display_box.classList.remove('change')
+  }
+
+  const screen = document.querySelector('.screen')
+
+</script>
+
+<style>
+  .slide_swiper {
+    width: 100%;
+    height: 90vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide_swiper_next,
+  .slide_swiper_prev {
+    width: 40px;
+    z-index: 50;
+    background: black;
+    cursor: pointer;
+    color: white;
+    height: 40px;
+    position: absolute;
+  }
+
+  .slide_swiper_next {
+    right: 20px;
+  }
+
+  .slide_swiper_prev {
+    left: 20px;
+  }
+
+  .slide_swiper .con_slide {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    position: relative;
+  }
+
+  .intro_slide {
+    font-size: 3rem;
+    font-weight: 600;
+  }
+
+  .slide_swiper #slide_tag {
+    top: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 3px;
+    position: absolute;
+  }
+</style>
+
+<script>
+  image_res.forEach((el, i) => {
+    anime({
+      targets: el,
+      translateY: [-100, 0],
+      duration: 300,
+      opacity: [0, 1],
+      // delay: i * 100,
+      easing: 'spring(1, 80, 10, 0)',
+    })
+  })
+</script>
+
+
+
+<script>
+  var screen_swiper = new Swiper('.edit_screen', {
+    loop: false,
+    // speed: 1000,
+    allowTouchMove: false,
+  })
+  if (sessionStorage.getItem('pagination')) {
+    screen_swiper.slideTo(sessionStorage.getItem('pagination'))
+  }
+
+  const edit_screen_pagination = document.querySelectorAll('.sideBar nav span')
+  edit_screen_pagination.forEach((el, i) => {
+    el.onclick = () => {
+      screen_swiper.slideTo(i)
+      sessionStorage.setItem('pagination', i)
+    }
+  })
+</script>
+{% endblock js %}

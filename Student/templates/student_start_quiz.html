@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Quiz/quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/start_quiz.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+    <strong style="font-size: 2rem;" class="quiz_info">{{quiz}}</strong>
+    <section class="timer_box" style="display: flex;"></section>
+  </div>
+  <i class="lock_box material-symbols-outlined" style="display: none;">Lock</i>
+  <section class="page_box"></section>
+
+  <section class="quiz_box swiper">
+    <div class="swiper-wrapper"></div>
+  </section>
+
+  <div class="quiz_box_nav">
+    <i class="material-symbols-outlined quiz_box_prev">chevron_left</i>
+    <i class="material-symbols-outlined quiz_box_next">chevron_right</i>
+  </div>
+  <a href="{% url 'student_get_quizes_page' quiz.topic.slug %}" class="return_tag" onclick="sessionStorage.clear()">
+    <i class="material-symbols-outlined">chevron_left</i> Return
+    <i class="material-symbols-outlined">chevron_left</i>
+  </a>
+</section>
+{% endblock page %}
+
+{% block js %}
+
+<script src="{% static 'Quiz/start_quiz.js' %}"></script>
+
+<script>
+  const lock_box = document.querySelector('.lock_box')
+  const quiz_info = document.querySelector('.quiz_info')
+  var quiz_duration = '{{quiz.duration}}'
+
+  submitQuiz = () => {
+    var answer_json = autoSaveQuiz()
+    sessionStorage.clear()
+    runAxios('mark_quiz', ['{{quiz.id}}', JSON.stringify(answer_json)])
+  }
+
+  handleData = (data) => {
+    console.log(data.data)
+  }
+
+  const timer_box = document.querySelector('.timer_box')
+
+  runTimer = () => {
+    val = sessionStorage.getItem('seconds')
+    sessionStorage.setItem('seconds', val - 1)
+    s = (val % 60)
+    if (s < 10) { s = `0${s}` }
+    m = Math.floor(val / 60 % 60)
+    if (m < 10) { m = `0${m}` }
+    h = Math.floor(val / 60 / 60 % 60)
+    if (h < 10) { h = `0${h}` }
+    timer_box.innerHTML = `<span>${h}</span> : <span>${m}</span> : <span>${s}</span>`
+    if (val < 1) {
+      submitQuiz()
+    }
+  }
+
+  let quiz_con = JSON.parse('{{quiz.con | safe}}')
+  console.log('{{quiz.con | safe}}')
+
+  if (!sessionStorage.getItem('seconds')) {
+    sessionStorage.setItem('seconds', quiz_duration * 60)
+  }
+</script>
+<script src="{% static 'Quiz/createQuiz.js' %}"></script>
+<script>
+  setInterval(() => {
+    runTimer()
+  }, 1000)
+</script>
+
+{% endblock js %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main" data-headers="{{headers}}" data-con="{{con}}">
+    <section class="banner">Time Table</section>
+    <table>
+      <tbody>
+        <tr class="period_box">
+          <th>Time</th>
+        </tr>
+        <tr>
+          <th>Monday</th>
+        </tr>
+        <tr>
+          <th>Tuesday</th>
+        </tr>
+        <tr>
+          <th>Wednesday</th>
+        </tr>
+        <tr>
+          <th>Thursday</th>
+        </tr>
+        <tr>
+          <th>Friday</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<style>
+  table {
+    padding: 10px;
+    padding: 20px;
+    border-spacing: 0.8vw;
+  }
+
+  th,
+  td {
+    min-width: 8vw;
+    vertical-align: middle;
+    text-align: center;
+    height: 4.5vw;
+    border-radius: 10px;
+    font-family: 'Alegreya Sans SC', sans-serif;
+  }
+  th{
+    background: dodgerblue;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  td{
+    border: 2px solid skyblue;
+  }
+</style>
+{% endblock page %}
+
+{% block js %}
+<script>
+  const timetable_periods = JSON.parse(document.querySelector('.main').dataset.headers)
+  const timetable_lessons = JSON.parse(document.querySelector('.main').dataset.con)
+  const period_box = document.querySelector('.period_box')
+
+  let trs = document.querySelectorAll('tr')
+  for (let i = 1; i < trs.length; i++) {
+    timetable_periods.forEach((period,pi)=>{
+      trs[i].innerHTML += `
+        <td class='cell'></td>
+      `
+    })
+  }
+
+  timetable_periods.forEach(period=>{
+    period_box.innerHTML += `
+      <th>${period}</th>
+    `
+  })
+
+  let cells = document.querySelectorAll('.cell')
+
+  timetable_lessons.forEach((lesson,i)=>{
+    if(lesson != 'empty'){
+      cells[i].innerHTML = lesson
+      if(lesson === 'Break'){
+        cells[i].style.background = 'salmon'
+        cells[i].style.color = 'white'
+        cells[i].style.border = '1px solid salmon'
+      }
+    }else{
+      cells[i].innerHTML = `<i style='color:salmon' class='material-symbols-outlined'>free_cancellation</i>`
+      cells[i].style.border = '1px dotted salmon'
+    }
+  })
+
+
+  cells.forEach((cell,i)=>{
+    anime({
+      targets : cell,
+      translateY : [-50,0],
+      delay: i*50,
+      scale : [0.8,1],
+      opacity: [0,1]
+    })
+  })
+</script>
+{% endblock js %}

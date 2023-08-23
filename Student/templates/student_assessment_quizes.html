@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/assessment.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <span>Quiz Courses | {{courses.count}}</span>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Course"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <section class="low_box">
+      {% for scheme in course.get_schemes %}
+      <section class="scheme_section">
+        <header>{{scheme}}</header>
+        <div class="con_box">
+          {% for quiz in scheme.get_quizes %}
+          {% for score in quiz.get_user_scores %}
+          <a href="{% url 'student_quiz_results_page' score.slug %}" class="course_box" data-name="{{score.quiz.title}}" data-topic="{{score.quiz.topic}}"
+            data-mark="{{score.mark}}">
+            <span>{{score.quiz.title}}</span>
+            <hr>
+            <div class="course_avg">{{score.mark}}%</div>
+          </a>
+          {% endfor %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+    </section>
+
+    <style>
+      .low_box {
+        gap: 2rem;
+      }
+    </style>
+  </section>
+</section>
+
+
+<script>
+  const courses = document.querySelectorAll('.course_box')
+  const course_avg = document.querySelectorAll('.course_avg')
+  const course_tag = document.querySelectorAll('.course_tag')
+</script>
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const items = document.querySelectorAll('.course_box')
+  runSchemeSearch = (val) => {
+    items.forEach(item => {
+      if (!item.dataset.name.toLowerCase().includes(val) && !item.dataset.topic.toLowerCase().includes(val)) {
+        item.style.display = 'none'
+      } else {
+        item.style.display = 'flex'
+      }
+      runAnime(item)
+    })
+  }
+
+  items.forEach(item => {
+    if (item.dataset.mark > 60) {
+      item.style.background = '#0ddc74'
+    } else if (item.dataset.mark > 40) {
+      item.style.background = '#ffa500'
+    } else {
+      item.style.background = 'salmon'
+    }
+  })
+
+  runAnime = (item) => {
+    anime({
+      targets: item,
+      translateX: [50, 0],
+      opacity: [0, 1],
+      duration: 500,
+      easing: 'spring(1, 80, 10, 0)'
+    })
+  }
+</script>
+{% endblock js %}

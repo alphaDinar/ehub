@@ -1,0 +1,110 @@
+<section class="sideBar">
+  <button class="material-symbols-outlined" id="sideBar_tag">linear_scale</button>
+  <header>
+    <i class="material-symbols-outlined">school</i>
+    <strong>{{course}}</strong>
+  </header>
+  <nav>
+    <section>
+      <a id="toggle_a"> <span>Students</span> <i class="material-symbols-outlined">arrow_drop_down</i></a>
+      <div>
+        <a href="{% url 'super_student_assessment_page' %}"><i class="material-symbols-outlined">analytics</i>
+          <span>Student Assessment</span></a>
+        <a href="{% url 'super_add_student_page'  %}"><i class="material-symbols-outlined">person_add</i> <span>Add
+            Student</span></a>
+      </div>
+    </section>
+    <hr>
+    <section>
+      <a id="toggle_a"> <span>Teachers</span> <i class="material-symbols-outlined">arrow_drop_down</i></a>
+      <div>
+        <a href=""><i class="material-symbols-outlined">analytics</i> <span>Teacher Assessment</span></a>
+        <a href="{% url 'super_add_teacher_page' %}"><i class="material-symbols-outlined">person_add</i> <span>Add
+            Teacher</span></a>
+      </div>
+    </section>
+    <hr>
+    <section>
+      <a id="toggle_a"> <span>Managers</span> <i class="material-symbols-outlined">arrow_drop_down</i></a>
+      <div>
+        <a href=""><i class="material-symbols-outlined">analytics</i> <span>Manager Assessment</span></a>
+        <a href="{% url 'super_add_manager_page' %}"><i class="material-symbols-outlined">person_add</i> <span>Add
+            Manager</span></a>
+      </div>
+    </section>
+    <hr>
+    <a href="{% url 'super_grades_page' %}"><i class="material-symbols-outlined">school</i> <span>Grades</span></a>
+    <!-- <a href="{% url 'super_courses_page' %}"><i class="material-symbols-outlined">school</i> <span>Courses</span></a> -->
+    <a href="{% url 'super_admin_page' %}"><i class="material-symbols-outlined">history_edu</i> <span>Administration</span> </a>
+    <hr>
+    <a href="{% url 'super_events_page' %}"><i class="material-symbols-outlined">event</i> <span>Events</span></a>
+    <a href="{% url 'super_noticeboard_page' %}"><i class="material-symbols-outlined">breaking_news</i> <span>Notice Board</span></a>
+    <a href="{% url 'super_grading_page' %}"><i class="material-symbols-outlined">verified</i> <span>Grading System</span></a>
+    <a href="{% url 'super_timetable_page' %}"><i class="material-symbols-outlined">table_chart</i> <span>Time Table</span></a>
+  </nav>
+
+  <style>
+    .sideBar {
+      background: #2a2a46;
+      color: white;
+    }
+
+    .sideBar nav hr {
+      width: 100%;
+      border-radius: 40px;
+      border-top: 2px solid white;
+    }
+
+    .sideBar nav section {
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .sideBar.change nav section div {
+      margin: 0;
+    }
+
+    .sideBar nav section div {
+      margin-left: 10px;
+      display: none;
+      flex-direction: column;
+    }
+
+    .sideBar nav section div.change {
+      display: flex;
+    }
+
+    .sideBar nav section p {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .sideBar a {
+      color: white !important;
+    }
+
+    .sideBar nav section div a {
+      color: skyblue !important;
+      font-size: 0.9rem;
+    }
+  </style>
+
+  <script>
+    const toggle_a = document.querySelectorAll('[id="toggle_a"]')
+    const a_hidden = document.querySelectorAll('.sideBar nav section div')
+
+    toggle_a.forEach((a, i) => {
+      a.onclick = () => {
+        a_hidden[i].classList.toggle('change')
+      }
+    })
+  </script>
+
+
+  <footer>
+    <a href="{% url 'logout_page' %}" style="color: salmon; font-weight: 600;" class="material-symbols-outlined">power_settings_new</a>
+  </footer>
+</section>

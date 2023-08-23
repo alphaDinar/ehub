@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Quiz/quiz.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/start_quiz.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <section class="page_box"></section>
+  <p class="score_user">
+    <span>{{assignment_score.student}}</span> |
+    <span>{{assignment_score.holder}}</span> |
+    <span>{{assignment_score.timestamp | date:'d b,Y'}}</span>
+  </p>
+  <p class="score_box" data-score="{{assignment_score.mark}}">
+    <span>{{assignment_score.mark}}%</span>
+  </p>
+
+  <section data-json="{{assignment_score.con}}" data-user_choice="{{assignment_score.choice_box}}"
+    data-com_choice="{{assignment_score.ans_box}}" class="quiz_box swiper" onsubmit="run(event)">
+    <div class="swiper-wrapper"></div>
+  </section>
+  <style>
+    .score_user {
+      box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+      padding: 15px;
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      gap: 0.5rem;
+      border-radius: 0 0 10px 0;
+      font-size: 0.9rem;
+    }
+
+    @media all and (max-width:800px) {
+      .score_user {
+        width: 100%;
+        border-radius: 0;
+        padding: 5px 0;
+        justify-content: space-around;
+      }
+    }
+
+    .score_box {
+      width: 120px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+
+  <div class="quiz_box_nav">
+    <i class="material-symbols-outlined quiz_box_prev">chevron_left</i>
+    <i class="material-symbols-outlined quiz_box_next">chevron_right</i>
+  </div>
+
+  {% if user.is_teacher %}
+  <a href="{% url 'assess_assignment_page' assignment_score.holder.slug %}" class="continue_tag">Return</a>
+  {% else %}
+  <a href="{% url 'student_get_assignments_page' assignment_score.holder.topic.slug %}" class="continue_tag">Return</a>
+  {% endif %}
+
+  <style>
+    .continue_tag {
+      padding: 5px 10px;
+      border: 1px solid darkgray;
+      border-radius: 15px;
+    }
+  </style>
+
+</section>
+
+<style>
+  .ans_rad {
+    background: white;
+    border: none;
+    color: darkcyan;
+    border: 1px solid darkcyan;
+  }
+
+  .correction_div {
+    color: #11dd77;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    gap: 0.3rem;
+
+  }
+</style>
+{% endblock page %}
+
+{% block js %}
+
+<script>
+  const score_box = document.querySelector('.score_box')
+  var mark = parseFloat(score_box.dataset.score)
+
+  var mark_data = gradeMark(mark)
+  score_box.style.background = mark_data.color
+</script>
+
+<script>
+  const quiz_wrapper = document.querySelector('.quiz_box .swiper-wrapper')
+  const quiz_box = document.querySelector('.quiz_box')
+  const page_box = document.querySelector('.page_box')
+
+  let user_choice = JSON.parse(quiz_box.dataset.user_choice)
+  let com_choice = JSON.parse(quiz_box.dataset.com_choice)
+
+  createPagination = (counter) => {
+    var page_span = document.createElement('span')
+    page_span.innerHTML = counter + 1
+    page_box.appendChild(page_span)
+  }
+
+  makeQuizSwiper = () => {
+    var quiz_swiper = new Swiper('.quiz_box', {
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+      },
+      speed: 500,
+      navigation: {
+        nextEl: '.quiz_box_next',
+        prevEl: '.quiz_box_prev',
+      },
+    });
+    const page_spans = document.querySelectorAll('.page_box span')
+    page_spans.forEach((el, i) => {
+      el.onclick = () => {
+        quiz_swiper.slideTo(i)
+        sessionStorage.setItem('current_slide', i)
+      }
+    })
+
+    if (sessionStorage.getItem('current_slide')) {
+      quiz_swiper.slideTo(sessionStorage.getItem('current_slide'))
+    }
+
+  }
+
+  createQuiz = () => {
+    let quiz_json = JSON.parse('{{assignment_score.con | safe}}')
+    quiz_json.forEach((question, qi) => {
+      var slide_sheet = document.createElement('div')
+      slide_sheet.classList.add('swiper-slide')
+      quiz_wrapper.appendChild(slide_sheet)
+      var question_tag = document.createElement('span')
+      question_tag.innerHTML = `Question ${qi + 1}`
+      question_tag.classList.add('question_tag')
+      slide_sheet.appendChild(question_tag)
+
+      if (question.type === 'mcq_mode') {
+        slide_sheet.id = 'mcq_mode'
+        var question_box = document.createElement('div')
+        question_box.classList.add('question_box')
+        question_box.innerHTML = question.question
+        slide_sheet.appendChild(question_box)
+        var answer_box = document.createElement('div')
+        answer_box.classList.add('answer_box')
+        slide_sheet.appendChild(answer_box)
+        let tags = ['A', 'B', 'C', 'D']
+        question.answers.forEach((answer, ai) => {
+          var answer_label = document.createElement('label')
+          answer_box.appendChild(answer_label)
+          var answer_radio = document.createElement('input')
+          answer_radio.type = 'radio'
+          answer_radio.disabled = true
+          answer_radio.value = answer
+          answer_radio.name = `ar${qi}`
+          answer_label.appendChild(answer_radio)
+          var ans_rad = document.createElement('div')
+          ans_rad.classList.add('ans_rad')
+          if (answer_radio.value === user_choice[qi]) {
+            answer_radio.checked = true
+            ans_rad.style.color = 'white'
+            if (answer_radio.value === com_choice[qi].cor_ans) {
+              ans_rad.style.background = '#11dd77'
+              ans_rad.style.border = '1px solid #11dd77'
+            } else {
+              ans_rad.style.background = 'rgb(255, 70, 75)'
+              ans_rad.style.border = '1px solid rgb(255, 70, 75)'
+            }
+          }
+          answer_label.appendChild(ans_rad)
+          var answer_tag = document.createElement('small')
+          answer_tag.innerHTML = tags[ai]
+          ans_rad.appendChild(answer_tag)
+          var answer_span = document.createElement('span')
+          answer_span.innerHTML = answer
+          ans_rad.appendChild(answer_span)
+          var answer_i = document.createElement('small')
+          answer_i.classList.add('material-symbols-outlined')
+          answer_i.innerHTML = 'verified'
+          ans_rad.appendChild(answer_i)
+        })
+        var correction_div = document.createElement('div')
+        correction_div.classList.add('correction_div')
+        correction_div.innerHTML = `<i class="material-symbols-outlined">verified</i><span>${com_choice[qi].cor_ans}</span>`
+        slide_sheet.appendChild(correction_div)
+      } else if (question.type === 'steps_mode') {
+        slide_sheet.id = 'steps_mode'
+        var question_box = document.createElement('div')
+        question_box.classList.add('question_box')
+        question_box.innerHTML = question.question
+        slide_sheet.appendChild(question_box)
+        let tags = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+        var step_box = document.createElement('div')
+        step_box.classList.add('step_box')
+        step_box.classList.add('material-symbols-outlined')
+        step_box.innerHTML = 'list'
+        if (user_choice[qi] === com_choice[qi].cor_ans) {
+          var box_color = '#11dd77'
+        } else {
+          var box_color = 'rgb(255, 70, 75)'
+        }
+        user_choice[qi].split('').forEach(choice => {
+          var box = document.createElement('div')
+          box.classList.add('box')
+          box.style.background = box_color
+          box.innerHTML = tags[choice]
+          step_box.appendChild(box)
+        })
+        slide_sheet.appendChild(step_box)
+        var answer_box = document.createElement('div')
+        answer_box.classList.add('answer_box')
+        slide_sheet.appendChild(answer_box)
+        question.answers.forEach((answer, ai) => {
+          var answer_label = document.createElement('label')
+          answer_box.appendChild(answer_label)
+          var answer_radio = document.createElement('input')
+          answer_radio.type = 'checkbox'
+          answer_radio.disabled = true
+          answer_radio.name = ai
+          answer_label.appendChild(answer_radio)
+          var ans_rad = document.createElement('div')
+          ans_rad.classList.add('ans_rad')
+          answer_label.appendChild(ans_rad)
+          var answer_tag = document.createElement('small')
+          answer_tag.innerHTML = tags[ai]
+          ans_rad.appendChild(answer_tag)
+          var answer_span = document.createElement('span')
+          answer_span.innerHTML = answer
+          ans_rad.appendChild(answer_span)
+          var answer_i = document.createElement('small')
+          answer_i.classList.add('material-symbols-outlined')
+          answer_i.innerHTML = 'step_out'
+          ans_rad.appendChild(answer_i)
+        })
+        var cor_step_box = document.createElement('div')
+        cor_step_box.classList.add('step_box')
+        cor_step_box.classList.add('material-symbols-outlined')
+        cor_step_box.style.color = '#11dd77'
+        cor_step_box.innerHTML = 'verified'
+        slide_sheet.appendChild(cor_step_box)
+        com_choice[qi].cor_ans.split('').forEach(choice => {
+          var cor_box = document.createElement('div')
+          cor_box.classList.add('box')
+          cor_box.innerHTML = tags[choice]
+          cor_box.style.background = '#11dd77'
+          cor_step_box.appendChild(cor_box)
+        })
+
+      } else if (question.type === 'fill_in_mode') {
+        var fill_in_box = document.createElement('div')
+        fill_in_box.classList.add('fill_in_box')
+        slide_sheet.id = 'fill_in_mode'
+        slide_sheet.appendChild(fill_in_box)
+        question.question_list.forEach((que, qii) => {
+          var fill_in = document.createElement('div')
+          fill_in.classList.add('fill_in')
+          fill_in_box.appendChild(fill_in)
+          var cor_p = document.createElement('small')
+          cor_p.style.width = '10px'
+          cor_p.style.height = '10px'
+          cor_p.style.borderRadius = '50%'
+          if (user_choice[qi][qii] === com_choice[qi].cor_ans[qii]) {
+            cor_p.style.background = '#11dd77'
+          } else {
+            cor_p.style.background = 'rgb(255, 70, 75)'
+          }
+          fill_in.appendChild(cor_p)
+          var q = document.createElement('p')
+          q.style.minWidth = `${question.width_list[qii]}px`
+          q.innerHTML = que
+          fill_in.appendChild(q)
+          var a = document.createElement('input')
+          a.value = user_choice[qi][qii]
+          a.readOnly = true
+          a.placeholder = `ans ${qii + 1}`
+          fill_in.appendChild(a)
+          var cor_ans = document.createElement('span')
+          cor_ans.innerHTML = com_choice[qi].cor_ans[qii]
+          cor_ans.style.fontWeight = 600
+          cor_ans.style.color = '#11dd77'
+          fill_in.appendChild(cor_ans)
+        })
+      }
+      createPagination(qi)
+    })
+    makeQuizSwiper()
+  }
+
+  createQuiz()
+</script>
+
+<style>
+  .fill_in_box {
+    display: flex;
+    gap: 3rem;
+    border: 2px solid black;
+  }
+</style>
+{% endblock js %}

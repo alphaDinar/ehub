@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main" data-progress_list="{{progress_list}}">
+    <ul>
+      {% for course in courses %}
+      <li>
+        {{course}}
+        <ul>
+          {% for scheme in course.get_schemes %}
+          <h4 id="{{scheme.id}}"  style="color: skyblue;">{{scheme}} {{scheme.id}}</h4> <br>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</section>
+{% endblock page %}
+
+{% block js %}
+<script>
+  const progress_list = JSON.parse(document.querySelector('.main').dataset.progress_list)
+  const schemes = document.querySelectorAll('h4')
+
+  console.log(progress_list)
+  progress_list.forEach(progress=>{
+    schemes.forEach(scheme=>{
+      console.log(scheme.id, progress.id)
+    })
+  })
+
+</script>
+
+{% endblock js %}

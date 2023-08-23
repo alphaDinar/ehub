@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main" style="position: relative;">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="">Notice Board</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Notice"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+
+    <section class="notice_box">  
+      {% for notice in notices %}
+      <div class="notice" data-con="{{notice.content}}">
+        <div style="width: 100%; height: 250px; border-radius: 10px 10px 0 0; background-image: url({{notice.image.url}});background-position: center;background-size: cover;">
+        </div>
+        <p>
+          <span>
+            {{notice}}
+          </span>
+          <small>{{notice.published|date:'jS F,Y'}}</small>
+        </p>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="notice_con_box">
+      <p></p>
+      <i class="material-symbols-outlined" style="background: salmon;color: white;" onclick="closeNoticeCon()">close</i>
+    </section>
+    <style>
+      .notice_con_box{
+        position: absolute;
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        display: none;
+        background: rgba(0, 0, 0, 0.432);
+        top: 0;
+        right: 0;
+        cursor: pointer;
+      }
+      .notice_con_box.change{
+        display: flex;
+      }
+      .notice_con_box p{
+        width: 450px;
+        padding: 15px;
+        border-radius: 15px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        font-size: 1.3rem;
+        height: 400px;
+        overflow-y: auto;
+        background: white;
+      }
+      .notice_con_box p::-webkit-scrollbar{
+        width: 8px;
+        border-radius: 40px;
+        background: lightgray;
+      }
+      .notice_con_box p::-webkit-scrollbar-thumb{
+        background: darkgray;
+        border-radius: 40px;
+      }
+      .notice_con_box i{
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 15%;
+        background: salmon;
+        color: white;
+      }
+    </style>
+
+    <script>
+      const notice_con_box = document.querySelector('.notice_con_box')
+      const notices = document.querySelectorAll('.notice')
+      notices.forEach(notice=>{
+        notice.onclick = ()=>{
+          notice_con_box.classList.add('change')
+          notice_con_box.children[0].innerHTML = notice.dataset.con
+        }
+      })
+
+      closeNoticeCon =()=>{
+        notice_con_box.classList.remove('change')
+      }
+    </script>
+    
+    <style>
+      .notice_box{
+        display: flex;
+        width: 90%; 
+        justify-content: space-around;
+        padding: 3vh 5%;
+      }
+      .notice{
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        align-items: center;
+        width: 350px;
+        border-radius: 15px;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+      }
+      .notice p{
+        display: flex;
+        padding: 15px 0;
+        gap: 0.5rem;
+        flex-direction: column;
+        align-items: center;
+      }
+      .notice p span{
+        font-size: 1.5rem;
+      }
+      .notice p small{
+        color: rgb(96, 96, 96);
+      }
+    </style>
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+
+{% endblock js %}

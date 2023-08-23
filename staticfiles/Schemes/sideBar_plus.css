@@ -1,0 +1,42 @@
+.sideBar{
+  padding: 5vh 1%;
+}
+
+.sideBar.change {
+  position: absolute;
+  left: -20%;
+}
+
+.main.change {
+  display: flex;
+  width: 100% !important;
+}
+
+#sideBar_tag{
+  background: wheat;
+  color: black;
+}
+
+@media all and (max-width:1300px) {
+
+  .main,
+  .main.change {
+    width: 100%;
+  }
+
+  .sideBar,
+  .sideBar.change {
+    position: fixed;
+    width: 280px;
+    padding: 5vh 10px;
+  }
+
+  .sideBar {
+    border: none;
+    left: -300px;
+  }
+
+  .sideBar.change {
+    left: 0;
+  }
+}

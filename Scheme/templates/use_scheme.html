@@ -1,0 +1,515 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/get_scheme.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/get_scheme_slides.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/sideBar_plus.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  <section class="del_prompt_box">
+    <span>Are You sure you want to delete</span>
+    <i class="del_prompt_box_res"></i>
+    <div class="del_prompt_box_nav">
+      <button style="background: rgb(22, 211, 117);" id="yes">Yes</button>
+      <button style="background: salmon;" id="no">No</button>
+    </div>
+  </section>
+
+  <section class="sideBar">
+    <button type="button" id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+    <header>
+      <strong>{{scheme.topic}}</strong>
+    </header>
+    <div class="page_box">
+
+    </div>
+    <nav class="resource_swiper swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <span>Images</span>
+          <input type="text" placeholder="Image search" class="image_search">
+          <div class="res_box">
+            {% for image in scheme.get_images %}
+            <div class="res" id="image_res" data-id="{{image.id}}" data-name="{{image.name}}"
+              data-src="{{image.image.url}}" draggable="true">
+              <div style="background-image: url({{image.image.url}});"></div>
+              <span>{{image.name}}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <span>Videos</span>
+          <input type="text" placeholder="video search" class="video_search">
+          <div class="res_box">
+            {% for video in scheme.get_videos %}
+            <div class="res" id="video_res" data-id="{{video.id}}" data-name="{{video.name}}" draggable="true">
+              <video src="{{video.video.url}}"></video>
+              <span>{{video.name}}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <span>Passages</span>
+          <input type="text" placeholder="Passage search" class="passage_search">
+          <div class="res_box">
+            {% for passage in scheme.get_passages %}
+            <div class="res" id="passage_res" data-id="{{passage.id}}" draggable="true" data-name="{{passage.title}}"
+              data-title="{{passage.title}}" data-body="{{passage.body}}">
+              <div style="background-image: url({{passage.thumb.url}});"></div>
+              <span>{{passage.title}}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <span>PDF</span>
+          <input type="text" placeholder="PDF search" class="video_search">
+          <div class="res_box">
+            {% for pdf in scheme.get_pdfs %}
+            <a href="{{pdf.pdf.url}}" target="_blank" class="res" data-name="{{pdf.name}}" draggable="false">
+              <div
+                style="background-image: url(https://res.cloudinary.com/dvnemzw0z/image/upload/v1685608527/a2eb80ff08a23b6f4c828da0b0d74f5e_t_rkjtf9.jpg); background-position: center; background-size: cover;">
+              </div>
+              <span>{{pdf.name}}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="swiper-slide">
+          <span>Slides</span>
+          <input type="text" placeholder="slide search" class="slide_search">
+          <div class="res_box">
+            {% for slide in scheme.get_slides %}
+            <div class="res_hold">
+              <div class="res" id="slide_res" data-id="{{slide.id}}" data-title="{{slide.title}}"
+                data-json="{{slide.con}}" data-name="{{slide.title}}" draggable="true">
+                <i class="material-symbols-outlined">slideshow</i>
+                <span>{{slide.title}}</span>
+              </div>
+              <button class="material-symbols-outlined del_slide" onclick="delSlide('{{slide.id}}','{{slide.title}}')">delete</button>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <footer>
+      <a href="{% url 'schemes_page' scheme.course.slug %}" class="material-symbols-outlined">arrow_back_ios_new</a>
+    </footer>
+  </section>
+  <i class="material-symbols-outlined" id="hide_nav">expand</i>
+  <section class="main">
+    <div class="prompt_box"></div>
+    <nav>
+      <i class="material-symbols-outlined" id="toggle_slide">slideshow</i>
+      <i class="material-symbols-outlined" id="toggle_clear">block</i>
+      <i class="material-symbols-outlined" id="toggle_stats">donut_small</i>
+    </nav>
+    <section class="stat_box">
+      20 students have completed this scheme
+    </section>
+
+    <section class="screen"> </section>
+
+    <section class="slide_menu_screen">
+      <section class="slide_box">
+        <div class="slide_box_nav">
+          <button class="material-symbols-outlined" onclick="clear_slide_tray()">delete</button>
+          <input type="text" placeholder="Title">
+          <!-- <button class="save_slide">Save</button> -->
+          <!-- <select name="se">
+            <option selected value="10">10 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300">5 minutes</option>
+          </select> -->
+          <button class="play material-symbols-outlined">save</button>
+
+        </div>
+        <div class="slide_tray" id="slide_tray">
+          <!-- <small id="slide_tip">Drop Items here</small>  -->
+        </div>
+      </section>
+    </section>
+    <section class="slide_screen swiper">
+      <div class="slide_screen_nav">
+        <i class="material-symbols-outlined">close</i>
+        <i class="material-symbols-outlined">edit</i>
+        <i class="slide_screen_nav_tag material-symbols-outlined">expand_less</i>
+      </div>
+      <div class="swiper-wrapper"></div>
+      <button type="button" class="material-symbols-outlined slide_screen_next">chevron_right</button>
+      <button type="button" class="material-symbols-outlined slide_screen_prev">chevron_left</button>
+    </section>
+
+  </section>
+</section>
+<style>
+  .page_box {
+    display: flex;
+    width: 90%;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .page_box p {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid darkcyan;
+  }
+
+  .res_hold {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .res_hold button {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    z-index: 50;
+  }
+
+  .del_slide {
+    right: 10%;
+    background: salmon;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .edit_slide {
+    background: skyblue;
+    right: 20%;
+  }
+</style>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const screen = document.querySelector('.screen')
+  const toggle_slide = document.getElementById('toggle_slide')
+  const slide_box_nav_title = document.querySelector('.slide_box_nav input')
+  const slide_menu_screen = document.querySelector('.slide_menu_screen')
+  const slide_box = document.querySelector('.slide_box')
+  const toggle_clear = document.getElementById('toggle_clear')
+
+  toggle_slide.onclick = () => {
+    screen.innerHTML = ''
+    slide_menu_screen.classList.toggle('change')
+  }
+
+  toggle_clear.onclick = () => {
+    screen.innerHTML = ''
+  }
+
+  const slide_screen_nav = document.querySelector('.slide_screen_nav')
+  const slide_screen_wrapper = document.querySelector('.slide_screen .swiper-wrapper')
+  const close_slide_screen_nav = document.querySelector('.slide_screen_nav').children[0]
+  const edit_slide_screen_nav = document.querySelector('.slide_screen_nav').children[0]
+  const slide_screen_nav_tag = document.querySelector('.slide_screen_nav_tag')
+
+  slide_screen_nav_tag.onclick = () => {
+    slide_screen_nav.classList.toggle('change')
+  }
+  close_slide_screen_nav.onclick = () => {
+    slide_screen.classList.remove('show')
+  }
+  const clear_slide_tray = () => {
+    slide_tray.innerHTML = ''
+  }
+</script>
+<script>
+  const page_box = document.querySelector('.page_box')
+
+  let icons = ['image', 'videocam', 'description', 'picture_as_pdf', 'slideshow']
+  document.querySelectorAll('.resource_swiper .swiper-slide').forEach((slide, i) => {
+    var pagination = document.createElement('p')
+    pagination.classList.add('material-symbols-outlined')
+    pagination.innerHTML = icons[i]
+    page_box.appendChild(pagination)
+  })
+</script>
+
+<script>
+  const del_prompt_box = document.querySelector('.del_prompt_box')
+  const del_prompt_box_res = document.querySelector('.del_prompt_box i')
+
+  delSlide = (val,title) => {
+    del_prompt_box.classList.add('show')
+    del_prompt_box_res.innerHTML = title
+    del_prompt_box.onclick = (event) => {
+      if (event.target.id === 'yes') {
+        runAxios('delete_scheme_slide', val, '{{token}}')
+        del_prompt_box.classList.remove('show')
+      } else {
+        del_prompt_box.classList.remove('show')
+      }
+    }
+  }
+
+  handleData = (data) => {
+    window.location.reload()
+  }
+</script>
+<script>
+  const res_box = document.querySelector('.res_box')
+  const res = document.querySelectorAll('.res')[0]
+
+  image_res.forEach(el => {
+    el.onclick = () => {
+      slide_menu_screen.classList.remove('change')
+      screen.innerHTML = ''
+      var image_box = document.createElement('img')
+      image_box.src = el.dataset.src
+      image_box.classList.add('image_box')
+      screen.appendChild(image_box)
+    }
+  })
+
+  video_res.forEach(el => {
+    el.onclick = () => {
+      slide_menu_screen.classList.remove('change')
+      screen.innerHTML = ''
+      var video_box = document.createElement('video')
+      video_box.src = el.children[0].src
+      video_box.controls = true
+      video_box.classList.add('mini_screen')
+      screen.appendChild(video_box)
+    }
+  })
+
+  passage_res.forEach(el => {
+    el.onclick = () => {
+      slide_menu_screen.classList.remove('change')
+      screen.innerHTML = ''
+      var title = document.createElement('span')
+      title.innerHTML = el.dataset.title
+      title.classList.add('passage_title')
+      screen.appendChild(title)
+      var body = document.createElement('p')
+      body.innerHTML = el.dataset.body
+      body.classList.add('passage_body')
+      screen.appendChild(body)
+    }
+  })
+</script>
+
+<script>
+  var resource_swiper = new Swiper('.resource_swiper', {
+    loop: true,
+    allowTouchMove: false,
+  });
+
+  if (sessionStorage.getItem('pagination')) {
+    resource_swiper.slideTo(sessionStorage.getItem('pagination'))
+  }
+
+  [...page_box.children].forEach((page, i) => {
+    page.onclick = () => {
+      sessionStorage.setItem('pagination', i)
+      resource_swiper.slideTo(i)
+    }
+  })
+</script>
+
+<script>
+  const res_lis = document.querySelectorAll('.res')
+  const slide_play = document.querySelector('.slide_box_nav .play')
+  const slide_tray = document.getElementById('slide_tray')
+  const slide_screen = document.querySelector('.slide_screen')
+
+  res_lis.forEach(el => {
+    el.ondragstart = (event) => {
+      dragged_res = el.cloneNode(true)
+      dragged_res_con = el.children[0]
+    }
+  })
+
+  slide_tray.ondragover = (event) => {
+    event.preventDefault()
+  }
+
+  const genDraggedHold = (dragged_res) => {
+    var dragged_res_hold = document.createElement('div')
+    dragged_res_hold.classList.add('dragged_res_hold')
+    var dragged_res_del = document.createElement('button')
+    dragged_res_del.innerHTML = '<i class="material-symbols-outlined">delete</i>'
+    dragged_res_del.classList.add('dragged_res_del')
+    dragged_res_hold.appendChild(dragged_res_del)
+    dragged_res.classList.add('slide_res')
+    dragged_res_hold.appendChild(dragged_res)
+    slide_tray.appendChild(dragged_res_hold)
+    anime({
+      targets: dragged_res_hold,
+      scale: [0.3, 1],
+      duration: 1000
+    })
+    return dragged_res
+  }
+
+  slide_tray.ondrop = (event) => {
+    if (dragged_res.id === 'slide_res') {
+      slide_tray.innerHTML = ''
+      breakSlideJson(dragged_res.dataset.json).forEach(el => {
+        genDraggedHold(el)
+      })
+      slide_box_nav_title.value = dragged_res.dataset.title
+    } else {
+      console.log('new')
+      genDraggedHold(dragged_res)
+    }
+    deletSlideItem()
+    startSlideShow()
+  }
+
+  const deletSlideItem = () => {
+    let dragged_res_del = document.querySelectorAll('.dragged_res_del')
+    dragged_res_del.forEach(el => {
+      el.onclick = () => {
+        anime({
+          targets: el.parentElement,
+          translateX: [0, -50],
+          opacity: [1, 0],
+          duration: 600,
+          easing: 'easeInOutExpo',
+          complete: () => {
+            el.parentElement.remove()
+          }
+        })
+      }
+    })
+  }
+
+  const startSlideShow = () => {
+    slide_play.onclick = () => {
+      let slide_save_json = []
+      document.querySelectorAll('.slide_res').forEach((el, i) => {
+        slide_save_json.push({ 'type': el.id, 'id': el.dataset.id })
+      })
+      runAxios('save_scheme_slide', ['{{scheme.id}}', slide_box_nav_title.value, JSON.stringify(slide_save_json)])
+      let slide_res = document.querySelectorAll('.slide_res')
+    }
+  }
+
+  const slide_res = document.querySelectorAll('[id="slide_res"]')
+  slide_res.forEach(el => {
+    el.onclick = () => {
+      deploySlide(el.dataset.title, breakSlideJson(el.dataset.json))
+    }
+  })
+
+  const breakSlideJson = (jsonList) => {
+    let saved_slide_res = []
+    JSON.parse(jsonList).forEach(jel => {
+      if (jel.type === 'image_res') {
+        image_res.forEach(mel => {
+          if (jel.id === mel.dataset.id) {
+            jel_clone = mel.cloneNode(true)
+            saved_slide_res.push(jel_clone)
+          }
+        })
+      } else if (jel.type === 'video_res') {
+        video_res.forEach(mel => {
+          if (jel.id === mel.dataset.id) {
+            jel_clone = mel.cloneNode(true)
+            saved_slide_res.push(jel_clone)
+          }
+        })
+      } else {
+        passage_res.forEach(mel => {
+          if (jel.id === mel.dataset.id) {
+            jel_clone = mel.cloneNode(true)
+            saved_slide_res.push(jel_clone)
+          }
+        })
+      }
+    })
+    return saved_slide_res
+  }
+
+
+  const deploySlide = (title, slide_res) => {
+    slide_screen_wrapper.innerHTML = ''
+    if (title) {
+      var text = title
+    } else {
+      var text = 'New Slide'
+    }
+    addSlideSheet(text)
+    slide_res.forEach(el => {
+      if (el.id === 'image_res') {
+        var slide_sheet = document.createElement('div')
+        slide_sheet.style.backgroundImage = el.children[0].style.backgroundImage
+        slide_sheet.classList.add('swiper-slide')
+        var slide_sheet_tag = document.createElement('span')
+        slide_sheet_tag.classList.add('slide_sheet_tag')
+        slide_sheet_tag.innerHTML = el.children[1].innerHTML
+        slide_sheet.appendChild(slide_sheet_tag)
+        slide_screen_wrapper.appendChild(slide_sheet)
+      } else if (el.id === 'video_res') {
+        var slide_sheet = document.createElement('video')
+        slide_sheet.src = el.children[0].src
+        slide_sheet.controls = true
+        slide_sheet.classList.add('swiper-slide')
+        slide_screen_wrapper.appendChild(slide_sheet)
+      } else {
+        var slide_sheet = document.createElement('div')
+        slide_sheet.classList.add('swiper-slide')
+        var title = document.createElement('span')
+        title.innerHTML = el.dataset.title
+        title.classList.add('passage_title')
+        slide_sheet.appendChild(title)
+        var body = document.createElement('p')
+        body.innerHTML = el.dataset.body
+        body.classList.add('passage_body')
+        slide_sheet.appendChild(body)
+        slide_screen_wrapper.appendChild(slide_sheet)
+      }
+    })
+    addSlideSheet('END OF SLIDE')
+    createSlideSwiper()
+    slide_screen.classList.add('show')
+  }
+
+  const addSlideSheet = (text) => {
+    var slide_sheet = document.createElement('div')
+    var slide_sheet_title = document.createElement('strong')
+    slide_sheet_title.innerHTML = text
+    slide_sheet.appendChild(slide_sheet_title)
+    slide_sheet.classList.add('swiper-slide')
+    slide_screen_wrapper.appendChild(slide_sheet)
+  }
+
+  const createSlideSwiper = () => {
+    var slide_screen_swiper = new Swiper('.slide_screen', {
+      loop: false,
+      speed: 1000,
+      navigation: {
+        nextEl: '.slide_screen_next',
+        prevEl: '.slide_screen_prev',
+      }
+    })
+  }
+  createSlideSwiper()
+</script>
+
+{% endblock js %}

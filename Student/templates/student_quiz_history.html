@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Student/sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'Student/student_dash.css' %}">
+{% endblock styles %}
+
+{% block page %}
+<section class="page">
+  {% include 'student_sideBar.html' %}
+  <section class="main">
+    <nav>
+      <div>
+        <i class="material-symbols-outlined">blur_on</i>
+        <p>
+          <a href="{% url 'student_quizes_page'%}">Quiz ></a>
+          <a href="{% url 'student_quizes_page'%}">Courses ></a>
+          <a href="{% url 'student_get_quizes_schemes_page' scheme.course.slug %}">Schemes ></a>
+          <a href="{% url 'student_get_quizes_page' scheme.slug %}">Quizes ></a>
+          <a href="{% url 'student_get_quizes_page' scheme.slug %}">Scores :</a>
+          <a href=""><i class="material-symbols-outlined">numbers</i> {{scores.count}}</a>
+        </p>
+      </div>
+      <input type="text" id="item_in" placeholder="Search Course"
+        oninput="runSchemeSearch(event.target.value.toLowerCase())">
+    </nav>
+    <section class="score_box">
+      <section class="score_header">{{quiz}} Scores</section>
+      <table class="scores">
+        {% for score in quiz_scores %}
+        <tr class="score" data-name="{{score.mark}}" data-subject="{{score.mark}}">
+          <td>{{forloop.counter}}</td>
+          <td class="mark_box" data-mark="{{score.mark}}">{{score.mark}} %</td>
+          <td>{{score.timestamp|date:'d b, Y'}}</td>
+          <td><a href="{% url 'student_quiz_results_page' score.id %}" class="material-symbols-outlined"
+              style="color: darkcyan;">link</a></td>
+        </tr>
+        {% endfor %}
+        <tr class="score" style="background: #2A2A46; color: white;">
+          <td>Average </td>
+          <td id="avg_mark_box"></td>
+          <td class="material-symbols-outlined">calculate</td>
+        </tr>
+      </table>
+
+    </section>
+
+
+
+    <style>
+      .mark_box {
+        padding: 5px;
+        border-radius: 3px;
+        color: white;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+      }
+
+      .score_box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 1rem;
+      }
+
+      .score_header {
+        min-width: 70%;
+        min-height: 30px;
+        padding: 10px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2A2A46;
+      }
+
+      .scores {
+        min-width: 70%;
+        gap: 0.8rem;
+        padding: 3px;
+        border-spacing: 1vw 0.8vw;
+      }
+
+      .scores td {
+        padding: 0.5vw;
+        text-align: center;
+        border-radius: 5px;
+      }
+
+      .score {
+        background: white;
+        color: rgb(47, 44, 44);
+        width: 60%;
+        padding: 10px 5%;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border-radius: 5px;
+      }
+
+      @media all and (max-width:1300px) {
+        .scores {
+          width: 100%;
+        }
+
+        .score {
+          width: 80%;
+        }
+      }
+    </style>
+
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  var avg_mark = 0
+  document.querySelectorAll('.mark_box').forEach(mark => {
+    var mark_val = parseInt(mark.dataset.mark)
+    var mark_data = gradeMark(mark_val)
+    mark.style.background = mark_data.color
+    avg_mark = avg_mark + mark_val
+  })
+  avg_mark = avg_mark / document.querySelectorAll('.mark_box').length || 0
+  document.getElementById('avg_mark_box').innerHTML = `${avg_mark.toFixed(2)} %`
+</script>
+
+
+<script>
+  let items = document.querySelectorAll('.score')
+</script>
+<script src="{% static 'Student/student.js' %}"></script>
+{% endblock js %}

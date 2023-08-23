@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/get_scheme.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/edit_scheme.css' %}">
+<link rel="stylesheet" href="{% static 'Schemes/sideBar_plus.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <section class="sideBar">
+    <button type="button" id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+    <header>
+      <strong>{{scheme.topic}}</strong>
+    </header>
+    <nav>
+      <small>Edit Resource</small>
+      <p>
+        <span><i class="material-symbols-outlined">image</i> Images <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">videocam</i> Video <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">description</i> Passage <i
+            class="material-symbols-outlined">chevron_right</i></span>
+        <span><i class="material-symbols-outlined">picture_as_pdf</i> PDF <i
+            class="material-symbols-outlined">chevron_right</i></span>
+      </p>
+    </nav>
+    <footer>
+      <a href="{% url 'schemes_page' scheme.course.slug %}" class="material-symbols-outlined">arrow_back_ios_new</a>
+    </footer>
+  </section>
+  <section class="main hide">
+    <section class="add_form_box">
+      <form class="add_form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="button" class="material-symbols-outlined">close</button>
+        <label for="add_res" class="material-symbols-outlined">
+          add_a_photo
+        </label>
+        <!-- <input type="text"> -->
+        <input type="text" class="res_type" name="res_type" style="display: none;">
+        <input type="text" class="res_name" name="res_name" placeholder="Image name" required>
+        <input type="file" accept="image/*" name="res" class="image" id="add_res" required>
+        <div class="dis_box">
+        </div>
+        <button type="submit">ADD</button>
+      </form>
+    </section>
+
+    <section class="add_passage_form">
+      <form class="passage_form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="button" class="material-symbols-outlined">close</button>
+        <input type="text" name="passage_id" value="" style="display: none;">
+        <input type="text" name="res_type" value="passage" style="display: none;">
+        <input type="text" placeholder="Title" name="passage_title">
+        <div class="body_box">
+          <textarea name="passage_body" placeholder="Body"></textarea>
+          <div class="image_box">
+            <label for="image_1">
+              <input type="file" id="image_1" name="image_1" accept="image/*">
+            </label>
+            <label for="image_2">
+              <input type="file" id="image_2" name="image_2" accept="image/*">
+            </label>
+            <label for="image_3">
+              <input type="file" id="image_3" name="image_3" accept="image/*">
+            </label>
+          </div>
+        </div>
+        <label for="passage_thumb_in" id="passage_thumb">Thumbnail
+          <input type="file" name="passage_thumb" id="passage_thumb_in" accept="image/*" style="display: none;">
+        </label>
+        <button type="submit">ADD</button>
+      </form>
+    </section>
+
+    <section class="edit_screen swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Images</span>
+            <input type="text" class="image_search">
+            <button type="button" id="add_res_image">+<i class="material-symbols-outlined">add_a_photo</i> </button>
+          </div>
+          <div class="res_edit_box">
+            {% for image in scheme.get_images %}
+            <div class="res" id="image_res" data-name="{{image.name}}">
+              <div style="background-image: url({{image.image.url}});"></div>
+              <span>{{image.name}}</span>
+              <a data-link="delete_scheme_image" data-id="{{image.id}}" id="del_res"
+                class="material-symbols-outlined">delete</a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Videos</span>
+            <input type="text" class="video_search">
+            <button type="button" id="add_res_video">+<i class="material-symbols-outlined">videocam</i></button>
+          </div>
+          <div class="res_edit_box">
+            {% for video in scheme.get_videos %}
+            <div class="res" id="video_res" data-name="{{video.name}}">
+              <video src="{{video.video.url}}"></video>
+              <span>{{video.name}}</span>
+              <a data-link="delete_scheme_video" data-id="{{video.id}}" id="del_res"
+                class="material-symbols-outlined">delete</a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>Passages</span>
+            <input type="text" class="passage_search">
+            <button type="button" id="add_res_document">+<i class="material-symbols-outlined">description</i></button>
+          </div>
+          <div class="res_edit_box">
+            {% for passage in scheme.get_passages %}
+            <div class="res" id="passage_res" data-name="{{passage.title}}" data-body="{{passage.body}}"
+              data-id="{{passage.id}}">
+              <div style="background-image: url({{passage.thumb.url}});"></div>
+              <span>{{passage.title}}</span>
+              <!-- <span>{{passage.thumb}}</span> -->
+              <p>
+                <a id="set_res" class="material-symbols-outlined">settings</a>
+                <a data-link="delete_scheme_passage" data-id="{{passage.id}}" id="del_res"
+                  class="material-symbols-outlined">delete</a>
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="res_edit_box_nav">
+            <span>PDF</span>
+            <input type="text" class="pdf_search">
+            <button type="button" id="add_res_pdf">+<i class="material-symbols-outlined">picture_as_pdf</i></button>
+          </div>
+          <div class="res_edit_box">
+            {% for pdf in scheme.get_pdfs %}
+            <div class="res" id="pdf_res" data-name="{{pdf.name}}" data-id="{{pdf.id}}">
+              <div
+                style="background-image: url(https://res.cloudinary.com/dvnemzw0z/image/upload/v1685608527/a2eb80ff08a23b6f4c828da0b0d74f5e_t_rkjtf9.jpg);">
+              </div>
+              <a href="{{pdf.pdf.url}}" target="_blank">{{pdf.name}}</a>
+              <!-- <span>{{passage.thumb}}</span> -->
+              <p>
+                <a data-link="delete_scheme_pdf" data-id="{{pdf.id}}" id="del_res"
+                  class="material-symbols-outlined">delete</a>
+              </p>
+            </div>
+            {% endfor %}
+
+            <section class="add_form_box_2">
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="res_type" value="pdf" readonly>
+                <input type="text" name="name">
+                <input type="file" name="res" accept="application/pdf">
+                <button type="submit">ADD</button>
+              </form>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <section class="del_prompt_box">
+        <span>Are You sure you want to delete</span>
+        <i class="del_prompt_box_res">Cocoa</i>
+        <div class="del_prompt_box_nav">
+          <button style="background: rgb(22, 211, 117);">Yes</button>
+          <button style="background: salmon;">No</button>
+        </div>
+      </section>
+      <section class="m_box">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="m_info">{{message}}</div>
+        {% endfor %}
+        {% endif %}
+      </section>
+    </section>
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const m_box = document.querySelector('.m_box')
+  const m_info = document.querySelector('.m_info')
+  if (m_info) {
+    m_box.classList.add('show')
+    setTimeout(() => {
+      m_box.classList.remove('show')
+    }, 3200)
+  }
+</script>
+<script>
+  const passage_body = document.querySelector('.passage_form textarea')
+  const passage_image_ins = document.querySelectorAll('.passage_form .body_box label input')
+  const passage_image_labels = document.querySelectorAll('.passage_form .body_box label')
+
+
+  passage_image_ins.forEach((el, i) => {
+    el.onchange = () => {
+      var [file] = el.files
+      var src = URL.createObjectURL(file)
+      passage_image_labels[i].style.backgroundImage = `url(${src})`
+      passage_image_labels[i].draggable = 'true'
+    }
+  })
+</script>
+<script>
+  const del_res = document.querySelectorAll('[id="del_res"]')
+  const del_prompt_box = document.querySelector('.del_prompt_box')
+  const del_prompt_box_res = document.querySelector('.del_prompt_box i')
+  const del_prompt_box_nav = document.querySelectorAll('.del_prompt_box button')
+
+  del_res.forEach(el => {
+    el.onclick = () => {
+      del_prompt_box.classList.add('show')
+      if (el.parentElement.classList.contains('res')) {
+        var obj = el.parentElement
+      } else {
+        var obj = el.parentElement.parentElement
+      }
+      del_prompt_box_res.innerHTML = obj.dataset.name
+      del_prompt_box_nav.forEach((button, i) => {
+        button.onclick = () => {
+          if (i === 0) {
+            del_prompt_box.classList.remove('show')
+            anime({
+              targets: obj,
+              translateY: [0, 100],
+              opacity: [1, 0],
+              duration: 500,
+              complete: () => {
+                obj.remove()
+              }
+            })
+            runAxios(el.dataset.link, el.dataset.id, '{{token}}')
+          } else {
+            del_prompt_box.classList.remove('show')
+          }
+        }
+      })
+    }
+  })
+
+
+  const add_passage_form = document.querySelector('.add_passage_form')
+  const add_passage_id = document.querySelector('.add_passage_form input[name="passage_id"]')
+  const add_passage_form_title = document.querySelector('.add_passage_form input[name="passage_title"]')
+  const add_passage_form_body = document.querySelector('.add_passage_form textarea')
+  const add_passage_form_submit = document.querySelector('.add_passage_form button[type="submit"]')
+  const set_res = document.querySelectorAll('[id="set_res"]')
+
+  set_res.forEach(el => {
+    el.onclick = () => {
+      var obj = el.parentElement.parentElement
+      add_passage_form.classList.add('change')
+      add_passage_id.value = obj.dataset.id
+      add_passage_form_title.value = obj.dataset.name
+      add_passage_form_body.value = obj.dataset.body
+      add_passage_form_submit.innerHTML = 'save changes'
+    }
+  })
+</script>
+<script>
+  const res_box = document.querySelector('.res_edit_box')
+  const res = document.querySelectorAll('.res')[0]
+  const screen = document.querySelector('.screen')
+
+</script>
+<script>
+  image_res.forEach((el, i) => {
+    anime({
+      targets: el,
+      translateY: [-30, 0],
+      duration: 600,
+      opacity: [0, 1],
+      // delay: i * 100,
+      easing: 'spring(1, 80, 10, 0)',
+    })
+  })
+</script>
+
+<script>
+  var screen_swiper = new Swiper('.edit_screen', {
+    loop: false,
+    speed: 1000,
+  })
+
+  const edit_screen_pagination = document.querySelectorAll('.sideBar nav p span')
+  edit_screen_pagination.forEach((el, i) => {
+    el.onclick = () => {
+      screen_swiper.slideTo(i)
+    }
+  })
+</script>
+<script>
+  const add_res_image = document.getElementById('add_res_image')
+  const add_res_video = document.getElementById('add_res_video')
+  const add_res_document = document.getElementById('add_res_document')
+  const add_form_box = document.querySelector('.add_form_box')
+  const close_form_box = document.querySelector('.add_form_box button')
+  const close_passage_form = document.querySelector('.add_passage_form button[type="button"]')
+
+  const dis_box = document.querySelector('.dis_box')
+
+  add_res_image.onclick = () => {
+    dis_box.style.backgroundImage = 'none'
+    document.querySelector('.add_form_box .res_type').value = 'image'
+    add_form_box.classList.add('change')
+  }
+  add_res_video.onclick = () => {
+    dis_box.style.backgroundImage = 'none'
+    document.querySelector('.add_form_box .res_type').value = 'video'
+    document.querySelector('.add_form_box label').innerHTML = 'videocam'
+    document.querySelector('.add_form_box .res_name').placeholder = 'video name'
+    document.querySelector('.add_form_box input[type="file"]').classList.replace('image', 'video')
+    document.querySelector('.add_form_box input[type="file"]').accept = 'video/*'
+    add_form_box.classList.add('change')
+  }
+
+  add_res_document.onclick = () => {
+    add_passage_form.classList.add('change')
+  }
+
+  close_form_box.onclick = () => {
+    add_form_box.classList.remove('change')
+  }
+  close_passage_form.onclick = () => {
+    add_passage_form.classList.remove('change')
+  }
+
+</script>
+<script>
+  const image_in = document.querySelector('.add_form input[type="file"]')
+
+  // function resizeImage(file, maxWidth, maxHeight, callback) {
+  //   var reader = new FileReader();
+  //   reader.onload = function (event) {
+  //     var image = new Image();
+  //     image.onload = function () {
+  //       var width = image.width;
+  //       var height = image.height;
+
+  //       // Calculate the new dimensions
+  //       var newWidth, newHeight;
+  //       if (width > height) {
+  //         newWidth = maxWidth;
+  //         newHeight = Math.floor(height * (maxWidth / width));
+  //       } else {
+  //         newHeight = maxHeight;
+  //         newWidth = Math.floor(width * (maxHeight / height));
+  //       }
+
+  //       // Create a canvas element
+  //       var canvas = document.createElement('canvas');
+  //       canvas.width = newWidth;
+  //       canvas.height = newHeight;
+
+  //       // Resize the image and draw it on the canvas
+  //       var ctx = canvas.getContext('2d');
+  //       ctx.drawImage(image, 0, 0, newWidth, newHeight);
+
+  //       // Get the resized data URL from the canvas and pass it to the callback function
+  //       var resizedDataURL = canvas.toDataURL(file.type);
+  //       callback(resizedDataURL);
+  //     }
+  //     image.src = event.target.result;
+  //   }
+  //   reader.readAsDataURL(file);
+  // }
+
+
+
+  image_in.onchange = (event) => {
+    //Resize Images before upload
+
+    const [file] = image_in.files
+    var src = URL.createObjectURL(file)
+    if (image_in.classList.contains('image')) {
+      dis_box.style.backgroundImage = `url(${src})`
+    } else {
+      dis_box.innerHTML = ''
+      const dis_box_video = document.createElement('video')
+      dis_box_video.controls = true
+      dis_box_video.src = src
+      dis_box.appendChild(dis_box_video)
+    }
+  }
+</script>
+
+<!-- <style>
+  .dis_box{
+    background-position: revert !important;
+    background-size: revert !important;
+    background-repeat: no-repeat;
+  }
+</style> -->
+{% endblock js %}

@@ -1,0 +1,64 @@
+
+.zoom_box {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.wrapper {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.wrapper section {
+  width: 100%;
+  width: 90%;
+  padding: 0 5%;
+}
+
+.meeting_box {
+  display: flex;
+  gap: 0 3rem;
+}
+
+.banner {
+  height: 40px;
+  display: flex;
+  font-size: 1.2rem;
+  align-items: center;
+  background: white;
+  padding: 0 5%;
+  color: rgb(45, 45, 45);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.meeting {
+  width: 270px;
+  border-radius: 10px;
+  background: #01b4fe;
+  display: flex;
+  color: wheat;
+  color: white;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  height: 180px;
+}
+#add_meeting {
+  display: flex;
+  align-items: center;
+  width: 270px;
+  border-radius: 10px;
+  font-size: 3rem;
+  color: white;
+  background: #01b4fe;
+  cursor: pointer;
+  height: 180px;
+  justify-content: center;
+}
+

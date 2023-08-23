@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'Quiz/get_quizes.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'sideBar.html' %}
+  <section class="main toggle">
+    <section class="con">
+      <form>
+        <div>
+          <i class="material-symbols-outlined">blur_on</i>
+          <span><a style="color: white;" href="{% url 'assignments_page' scheme.course.slug %}">Assignments</a> > {{scheme.topic}} Assignments | {{scheme.get_assignments.count}}</span>
+        </div>
+        <input type="text" id="item_in">
+        <select id="item_select">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+        </select>
+        <div class="button" onclick="show_add_quiz()">+</div>
+      </form>
+
+      <div class="scheme_box">
+        {% for assignment in scheme.get_assignments %}
+        <div class="scheme_hold" id="item" data-name="{{assignment.title}}" data-status="{{assignment.status}}">
+          <a href="{% url 'assess_assignment_page' assignment.slug %}" class="assess_scheme">
+            <i class="material-symbols-outlined">analytics</i>
+          </a>
+          <a href="{% url 'use_assignment_page' assignment.slug %}" class="scheme" style="text-align: center;">
+            <i class="material-symbols-outlined">assignment</i>
+            <span style="text-align: center;">{{assignment.title}}</span>
+            {% if assignment.status == 'pending' %}
+            <p style="background: #fe6265;"></p>
+            {% else %}
+            <p style="background: #acedc2;"></p>
+            {% endif %}
+            <small style="text-align: center;">{{assignment.deadline|timeuntil}} left</small>
+          </a>
+          <a href="{% url 'set_assignment_page' assignment.slug %}" class="edit_scheme">
+            <i class="material-symbols-outlined">settings</i>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <form class="add_quiz" method="post">
+      {% csrf_token %}
+      <i class="material-symbols-outlined" onclick="close_add_quiz()" id="close_add_quiz">close</i>
+      <section>
+        <i class="material-symbols-outlined">assignment</i>
+        <div class="input_field">
+          <span>Title</span>
+          <input type="text" name="title" required>
+        </div>
+        <button type="submit">ADD</button>
+      </section>
+    </form>
+  </section>
+</section>
+{% endblock page %}
+
+{% block js %}
+<script src="{% static 'Quiz/get_quizes.js' %}"></script>
+{% endblock js %}

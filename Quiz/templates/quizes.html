@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<title>Document</title>
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'sideBar.html' %}
+  <section class="main toggle">
+    <section class="con">
+      <form>
+        <div>
+          <i class="material-symbols-outlined">blur_on</i>
+          <span>Quizes | {{quiz_count}}</span>
+        </div>
+        <input type="text" id="item_in">
+        <select id="item_select">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+        </select>
+      </form>
+      <div class="scheme_box">
+        {% for scheme in schemes %}
+        <div class="scheme_hold" id="item" data-name="{{scheme.topic}}" data-status="{{scheme.status}}">
+          <a href="{% url 'get_quizes_page' scheme.slug %}" class="scheme">
+            <i class="material-symbols-outlined">psychology_alt</i>
+            <span>{{scheme.topic}}</span>
+            <i style="font-style: normal;">{{scheme.get_quizes.count}}</i>
+            <small>43 mins ago</small>
+            <p style="background: white;"></p>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</section>
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  const item_in = document.getElementById('item_in')
+  const item_select = document.getElementById('item_select')
+  const items = document.querySelectorAll('#item')
+
+  item_in.oninput = () => {
+    items.forEach(el => {
+      var el_name = el.dataset.name.toLowerCase()
+      if (!el_name.includes(item_in.value)) {
+        el.style.display = 'none'
+      } else {
+        el.style.display = 'flex'
+      }
+      runSearchAnime(el)
+    })
+  }
+
+  item_select.onchange = () => {
+    items.forEach(el => {
+      var el_status = el.dataset.status.toLowerCase()
+      if(item_select.value === 'all'){
+        el.style.display = 'flex'
+      }else{
+        if (el_status != item_select.value.toLowerCase()) {
+          el.style.display = 'none'
+        } else {
+          el.style.display = 'flex'
+        }
+      }
+      runSearchAnime(el)
+    })
+  }
+
+  items.forEach((el, i) => {
+    anime({
+      targets: el,
+      translateX: [-50, 0],
+      opacity: [0, 1],
+      duration: 300,
+      easing: 'spring(1, 80, 10, 0)',
+      delay: i * 100
+    })
+  })
+
+  document.querySelectorAll('.main header .box').forEach((el, i) => {
+    anime({
+      targets: el,
+      translateY: [-50, 0],
+      opacity: [0, 1],
+      scale: [0.8, 1],
+      duration: 500,
+      easing: 'spring(1, 80, 10, 0)',
+      delay: i * 100
+    })
+  })
+
+</script>
+{% endblock js %}

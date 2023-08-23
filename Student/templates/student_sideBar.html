@@ -1,0 +1,203 @@
+{% load static %}
+
+<section class="sideBar">
+  <button id="sideBar_tag" class="material-symbols-outlined">linear_scale</button>
+  <a style="color: white; align-items: center; gap: 0.3rem; display: flex; font-size: 1.5rem;"
+    href="{% url 'student_dash' %}"><i class="material-symbols-outlined">dashboard</i> <span>Dashboard</span> </a>
+
+
+  <header>
+    <div
+      style="background-image: url(https://res.cloudinary.com/dvnemzw0z/image/upload/v1685699929/medium-shot-boy-being-winner_z6oxb9.jpg);">
+    </div>
+    <strong id="info">{{user.username}}</strong>
+    <small id="info">{{user.student.grade}}</small>
+    <hr>
+  </header>
+  <nav>
+    <a href="{% url 'student_slides_page' %}"><i class="material-symbols-outlined">inventory_2</i>
+      <span>Courses </span></a>
+    <a href="{% url 'student_quizes_page' %}"><i class="material-symbols-outlined">psychology_alt</i>
+      <span>Quizes</span></a>
+    <a href="{% url 'student_assignments_page' %}"><i class="material-symbols-outlined">assignment</i>
+      <span>Assignment</span></a>
+    <a href="{% url 'student_timetable_page' %}"><i class="material-symbols-outlined">date_range</i> <span>Time Table</span> </a>
+    <a href="{% url 'student_liveclasses_page' %}"><i class="material-symbols-outlined">video_call</i> <span>Live
+        Classes</span></a>
+    <a href="{% url 'student_assessment_page' %}"><i class="material-symbols-outlined">analytics</i>
+      <span>Track Performance</span></a>
+    <a href="{% url 'student_events_page' %}"><i class="material-symbols-outlined">event</i> <span>Events</span> </a>
+    <a href="{% url 'student_inbox_page' %}"><i class="material-symbols-outlined">message</i> <span>Inbox</span></a>
+    <a href="{% url 'student_notification_page' %}" class="note_a"><i class="material-symbols-outlined">notifications</i>
+      <span>Notifications</span>
+      <small class="note_small">
+        {{user.student.get_notification.counter}}    
+      </small>
+    </a>
+    <a href=""><i class="material-symbols-outlined">person_pin</i> <span>Profile</span></a>
+  </nav>
+
+  <style>
+    .note_a{
+      position: relative;
+      /* border: 2px solid gold; */
+    }
+    .note_a small{
+      height: 25px;
+      width: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      position: absolute;
+      color: black;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 50%;
+    }
+  </style>
+
+  <footer>
+    <hr>
+    <a href="{% url 'logout_page' %}" class="material-symbols-outlined">power_settings_new</a>
+  </footer>
+</section>
+
+<script>
+  document.querySelectorAll('.sideBar nav a').forEach((a, i) => {
+    anime({
+      targets: a,
+      duration: 1000,
+      opacity: [0, 1],
+      delay: i * 100,
+      translateY: [-50, 0]
+    })
+  })
+
+  const note_small = document.querySelector('.note_small')
+
+  const socket = new WebSocket('ws://' + window.location.host + '/ws/student_dash')
+
+  socket.onopen =()=>{
+    socket.send(JSON.stringify({
+      'message' : 'king',
+      'sender' : 'kong'
+    }))
+  }
+
+  socket.onmessage =(data)=>{
+    console.log(data.data)
+    console.log('me')
+    note_small.innerHTML = parseInt(note_small.innerHTML) + 1
+  }
+
+  // console.log()
+</script>
+
+
+<style>
+  .sideBar {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 200;
+    width: 18%;
+    padding: 5vh 1%;
+    min-height: 90vh;
+    top: 0;
+    left: 0;
+    background: #2c2c2c;
+    color: white;
+    transition: 0.4s ease;
+    position: fixed;
+  }
+
+  .sideBar.change {
+    width: 3%;
+  }
+
+  .sideBar.change a span,
+  .sideBar.change header div,
+  .sideBar.change #info {
+    display: none;
+  }
+
+  .sideBar header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .sideBar header strong {
+    font-size: 1.3rem;
+  }
+
+  .sideBar header small {
+    font-size: 0.8rem;
+  }
+
+  .sideBar header div {
+    height: 100px;
+    border-radius: 50%;
+    width: 100px;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .sideBar nav {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .sideBar nav a {
+    display: flex;
+    gap: 0.5rem;
+    color: rgb(45, 45, 45);
+    color: white;
+    align-items: center;
+  }
+
+  #sideBar_tag {
+    width: 30px;
+    height: 30px;
+    background: black;
+    cursor: pointer;
+    color: white;
+    position: absolute;
+    left: 100%;
+    top: 0;
+  }
+
+  .sideBar footer a {
+    color: white;
+  }
+
+  @media all and (max-width:1300px) {
+
+    .sideBar,
+    .sideBar.change {
+      width: 280px;
+      padding: 5vh 10px;
+    }
+
+    .sideBar {
+      left: -300px;
+    }
+
+    .sideBar.change nav a span {
+      display: flex;
+    }
+
+    .sideBar.change header div {
+      display: flex;
+    }
+
+    .sideBar.sideBar.change {
+      left: 0;
+    }
+  }
+</style>

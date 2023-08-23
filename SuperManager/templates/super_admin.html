@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        {% csrf_token %}
+        <input type="text" name="type" style="display: none;" value="new">
+        <input type="text" name="id" style="display: none;">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        <input type="text" name="name" placeholder="Event Name" required>
+        <input type="date" name="start_date">
+        <input type="date" name="end_date">
+        <button type="submit">+</button>
+      </form>
+    </section>
+
+    <header>
+      <strong>Administration</strong>
+    </header>
+
+    <section class="grade_box">
+      <a class="grade" href="{% url 'super_add_student_page' %}">
+        <span>Students</span>
+        <small>
+          {{students.count}}
+        </small>
+      </a>
+      <a class="grade" href="{% url 'super_add_teacher_page' %}">
+        <span>Teachers</span>
+        <small>
+          {{teachers.count}}
+        </small>
+      </a>
+      <a class="grade" href="{% url 'super_add_manager_page' %}">
+        <span>Managers</span>
+        <small>
+          {{managers.count}}
+        </small>
+      </a>
+    </section>
+
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+  }
+</style>
+
+{% endblock page %}
+
+{% block js %}
+<script>
+  const grades = document.querySelectorAll('.grade')
+</script>
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

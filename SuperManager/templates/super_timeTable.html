@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+<link rel="stylesheet" href="{% static 'Super/timetable.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> Time Table</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+    </header>
+    <div class="inst_box">
+      <span>Select a grade to continue</span>
+    </div>
+
+    <section class="template_box" data-template_headers="{{table_template.headers}}"
+      data-template_con="{{table_template.con}}">
+      <table>
+        <tbody>
+          <tr>
+            <th>Day</th>
+          </tr>
+
+          <tr>
+            <td>Monday</td>
+          </tr>
+          <tr>
+            <td>Tuesday</td>
+          </tr>
+          <tr>
+            <td>Wednesday</td>
+          </tr>
+          <tr>
+            <td>Thursday</td>
+          </tr>
+          <tr>
+            <td>Friday</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr>
+      <section class="table_nav">
+        <button onclick="addColumn()">Add column</button>
+        <div onsubmit="event.preventDefault()">
+          <input type="time" id="start_time" value="08:00">
+          <i class="material-symbols-outlined">arrow_range</i>
+          <input type="time" id="end_time" value="10:00">
+        </div>
+        <button onclick="remColumn()">Remove Column</button>
+        <button onclick="saveTemplate()" style="background: skyblue;">Save Template</button>
+      </section>
+      <hr>
+    </section>
+
+    <div class="grade_box">
+      {% for grade in grades %}
+      <a href="{% url 'super_make_timeTable_page' grade.slug %}" class="grade" data-name="{{grade}}"
+        data-code="{{grade.code}}">
+        <div>
+          <small class="material-symbols-outlined">school</small>
+          {{grade}}
+        </div>
+        <p></p>
+      </a>
+      {% endfor %}
+    </div>
+
+
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .template_box {
+    padding: 3vh 0;
+    /* border: 3px springgreen solid; */
+    display: flex;
+    flex-direction: column;
+    min-width: 90%;
+    gap: 2rem 0;
+    align-items: center;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+<script>
+  const grades = document.querySelectorAll('.grade')
+
+  runGradeSearch = (val) => {
+    grades.forEach((grade, i) => {
+      if (!grade.dataset.name.toLowerCase().includes(val) && !grade.dataset.code.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+      runSuperAnime(grade, i)
+    })
+  }
+
+</script>
+
+<script src="{% static 'Super/anime.js' %}"></script>
+<script>
+  const rows = document.querySelectorAll('tr')
+  const start_time = document.getElementById('start_time')
+  const end_time = document.getElementById('end_time')
+  const subjects = document.querySelectorAll('.subject')
+
+  addColumn = () => {
+    rows.forEach((row, i) => {
+      if (i === 0) {
+        var cell = document.createElement('th')
+        cell.classList.add('subject_header')
+        cell.innerHTML = `${start_time.value} - ${end_time.value}`
+      }
+      else {
+        var cell = document.createElement('td')
+        cell.classList.add('subject_cell')
+      }
+      cell.classList.add('cell')
+      row.appendChild(cell)
+    })
+  }
+
+  remColumn = () => {
+    let cells = document.querySelectorAll('.cell')
+    if (cells.length > 1) {
+      rows.forEach(row => {
+        row.children[row.children.length - 1].remove()
+        saveTableState(document.querySelectorAll('.subject_cell'))
+      })
+    }
+  }
+
+  saveTableState = (subject_cells) => {
+    let table_json = []
+    subject_cells.forEach(subject_cell => {
+      if (subject_cell.dataset.name) {
+        table_json.push(subject_cell.dataset.name)
+      } else {
+        table_json.push('empty')
+      }
+    })
+    let header_json = []
+    const subject_headers = document.querySelectorAll('.subject_header')
+    subject_headers.forEach(header => {
+      header_json.push(header.innerHTML)
+    })
+    sessionStorage.setItem('subject_headers', JSON.stringify(header_json))
+    sessionStorage.setItem('table_json', JSON.stringify(table_json))
+    return [JSON.stringify(header_json), JSON.stringify(table_json)]
+  }
+
+  saveTemplate = () => {
+    let table_data = saveTableState(document.querySelectorAll('.subject_cell'))
+    runAxios('super_timetable_template', table_data, '{{token}}')
+  }
+  handleData = (data) => {
+    console.log(data.data)
+  }
+
+
+  generateTemplate = (subject_headers_json, subject_json) => {
+    for (let i = 0; i < subject_headers_json.length; i++) {
+      addColumn()
+    }
+    let subject_headers = document.querySelectorAll('.subject_header')
+    subject_headers_json.forEach((header, hi) => {
+      subject_headers[hi].innerHTML = header
+    });
+    let subject_cells = document.querySelectorAll('.subject_cell')
+  }
+
+
+  createTemplate = () => {
+    const template_box = document.querySelector('.template_box')
+    let subject_headers_json = JSON.parse(template_box.dataset.template_headers)
+    let subject_json = JSON.parse(template_box.dataset.template_headers)
+    generateTemplate(subject_headers_json, subject_json)
+  }
+
+  createTemplate()
+</script>
+
+{% endblock js %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'dash.css' %}">
+<link rel="stylesheet" href="{% static 'sideBar.css' %}">
+<link rel="stylesheet" href="{% static 'prompt.css' %}">
+<link rel="stylesheet" href="{% static 'add_form.css' %}">
+<link rel="stylesheet" href="{% static 'Super/super.css' %}">
+{% endblock styles %}
+
+
+{% block page %}
+<section class="page">
+  <div class="prompt_box">
+    <p>Are you sure you want to delete</p>
+    <span class="user_space"></span>
+    <nav>
+      <button id="yes" style="background: rgb(18, 203, 111);">Yes</button>
+      <button id="no" style="background: salmon;">No</button>
+    </nav>
+  </div>
+
+  {% include 'super_sideBar.html' %}
+  <section class="main">
+    <section class="add_form">
+      <form method="post">
+        <input type="text" name="type" style="display: none;">
+        <input type="text" name="id" style="display: none;">
+        <i class="close_form material-symbols-outlined" onclick="closeForm()">close</i>
+        {% csrf_token %}
+        <input type="text" name="subject" placeholder="Subject" required>
+        <button type="submit">+</button>
+      </form>
+    </section>
+
+
+    <header>
+      <span><i class="material-symbols-outlined">blur_on</i> {{grade}}</span>
+      <input type="text" placeholder="Search Grade" oninput="runGradeSearch(event.target.value.toLowerCase())">
+      <button type="button" onclick="showForm('new')"> + Add Course</button>
+    </header>
+
+    {% if messages %}
+    {% for message in messages %}
+    <span class="mBox" style="text-align: center;">{{message}}</span>
+    {% endfor %}
+    {% endif %}
+
+    <div class="grade_box">
+
+      {% for course in grade.get_courses %}
+      <div class="grade" data-name="{{course.subject}}"
+        style="background: rgb(22, 176, 237); color: white; border: 1px solid white;">
+        {{course}}
+        <small style="font-size: 0.9rem; font-weight: 400;">{{course.subject}}</small>
+        <i class="material-symbols-outlined" data-subject="{{course.subject}}" data-id="{{course.id}}" id="edit"
+          onclick="showForm('old', event.target)">edit</i>
+        <i class="material-symbols-outlined" id="del" onclick="delPrompt(event.target)" data-course="{{course}}"
+          data-id="{{course.id}}">delete</i>
+      </div>
+      {% endfor %}
+
+
+      <script>
+        const prompt_box = document.querySelector('.prompt_box')
+        const user_space = document.querySelector('.user_space')
+
+        delPrompt = (main_event) => {
+          user_space.innerHTML = main_event.dataset.course
+          prompt_box.classList.add('show')
+          prompt_box.onclick = (event) => {
+            if (event.target.id === 'no') {
+              prompt_box.remove('show')
+            } else {
+              runAxios('super_delete_course', main_event.dataset.id, '{{token}}')
+              main_event.parentElement.remove()
+              prompt_box.remove('show')
+            }
+          }
+        }
+
+        handleData = (data) => {
+          console.log(data.data)
+        }
+      </script>
+
+    </div>
+  </section>
+</section>
+
+<style>
+  .main {
+    padding: 0 !important;
+    position: relative;
+  }
+
+  .grade_box {
+    justify-content: space-around;
+    gap: 3rem 3rem;
+  }
+</style>
+{% endblock page %}
+
+
+
+{% block js %}
+<script>
+  const add_form = document.querySelector('.add_form')
+  const register_form = document.querySelector('.add_form form')
+  const in_type = document.getElementById('in_type')
+
+  closeForm = () => {
+    add_form.classList.remove('change')
+  }
+
+  showForm = (val, event) => {
+    register_form.children[4].value = ''
+    if (val == 'new') {
+      register_form.children[0].value = 'new'
+    } else {
+      register_form.children[0].value = 'old'
+      register_form.children[1].value = event.dataset.id
+      register_form.children[4].value = event.dataset.subject
+    }
+    add_form.classList.add('change')
+  }
+</script>
+
+<script>
+  const grades = document.querySelectorAll('.grade')
+
+  runGradeSearch = (val) => {
+    grades.forEach(grade => {
+      if (!grade.dataset.name.toLowerCase().includes(val)) {
+        grade.style.display = 'none'
+      } else {
+        grade.style.display = 'flex'
+      }
+    })
+  }
+</script>
+<script src="{% static 'Super/anime.js' %}"></script>
+{% endblock js %}

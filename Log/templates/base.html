@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,0,0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'base.css' %}">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+    integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"
+    integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+    integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+  {% block styles %}
+
+  {% endblock styles %}
+</head>
+
+<body>
+  {% block page %}
+
+  {% endblock page %}
+
+
+  {% block response %}
+
+  {% endblock response %}
+
+
+  <script src="{% static 'schemes.js' %}"></script>
+  <script>
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href)
+    }
+  </script>
+
+  <script>
+    const runAxios = (url, data) => {
+      axios.post(`${window.location.origin}/${url}`, {
+        data: data
+      }
+        , {
+          headers: {
+            'X-CSRFToken': '{{token}}'
+          }
+        }
+      )
+        .then(function (response) {
+          if (response.data.info === 'reload') {
+            window.location.reload()
+          } else if (response.data.info === 'redirect') {
+            window.location.href = response.data.link
+          } else {
+            handleData(response)
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  </script>
+
+  <script>
+    if ('{{grading_box | safe}}') {
+      let grading_box = JSON.parse('{{grading_box | safe}}')
+      gradeMark = (mark) => {
+        let res = []
+        grading_box.forEach(box => {
+          if (mark >= box.min && mark <= box.max) {
+            res.push(box)
+          }
+        })
+        return res[0]
+      }
+    }
+  </script>
+
+  <script>
+    getTimeLeft = (assignment_deadline, today, box) => {
+      var jsDateValue = new Date(assignment_deadline);
+      var timeLeft = jsDateValue - today;
+
+      var daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      if (daysLeft < 10) {
+        daysLeft = `0${daysLeft}`
+      }
+      var hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      if (hoursLeft < 10) {
+        hoursLeft = `0${hoursLeft}`
+      }
+      var minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      if (minutesLeft < 10) {
+        minutesLeft = `0${minutesLeft}`
+      }
+      var secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      if (secondsLeft < 10) {
+        secondsLeft = `0${secondsLeft}`
+      }
+      let timeLeft_res = { daysLeft: daysLeft, hoursLeft: hoursLeft, minutesLeft: minutesLeft, secondsLeft: secondsLeft, timeLeft: timeLeft }
+      if(timeLeft > 0){
+        if (timeLeft_res.daysLeft > 0) {
+          box.innerHTML = `${timeLeft_res.daysLeft} : ${timeLeft_res.hoursLeft} : ${timeLeft_res.minutesLeft} : ${timeLeft_res.secondsLeft}`
+        } else {
+          box.innerHTML = `${timeLeft_res.hoursLeft} : ${timeLeft_res.minutesLeft} : ${timeLeft_res.secondsLeft}`
+        }
+      }
+      
+      return timeLeft_res
+    }
+  </script>
+
+  {% block js %}
+  {% endblock js %}
+</body>
+
+</html>
