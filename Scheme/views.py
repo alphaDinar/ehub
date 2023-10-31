@@ -121,8 +121,8 @@ def edit_scheme(request, slug):
                 image.image = request.FILES.get('res')
                 image.holder = scheme
                 image.save()
-                progress_json = {'type':'image','id' : image.id, 'status' : 'pending'}
-                add_progress_res(scheme_progress, progress_json)
+                # progress_json = {'type':'image','id' : image.id, 'status' : 'pending'}
+                # add_progress_res(scheme_progress, progress_json)
                 messages.info(request, 'images added successfully')
         elif request.POST.get('res_type') == 'video':
             res_name = request.POST.get('res_name')
@@ -134,8 +134,8 @@ def edit_scheme(request, slug):
                 video.video = request.FILES.get('res')
                 video.holder = scheme
                 video.save()
-                progress_json = {'type':'video','id' : video.id, 'status' : 'pending'}
-                add_progress_res(scheme_progress, progress_json)
+                # progress_json = {'type':'video','id' : video.id, 'status' : 'pending'}
+                # add_progress_res(scheme_progress, progress_json)
                 messages.info(request, 'video added successfully')
         elif request.POST.get('res_type') == 'passage':
             if(request.POST.get('passage_id')):
@@ -158,8 +158,8 @@ def edit_scheme(request, slug):
                         passage.thumb = request.FILES.get('passage_thumb') 
                     passage.holder = scheme
                     passage.save()
-                    progress_json = {'type':'passage','id' : passage.id, 'status' : 'pending'}
-                    add_progress_res(scheme_progress, progress_json)
+                    # progress_json = {'type':'passage','id' : passage.id, 'status' : 'pending'}
+                    # add_progress_res(scheme_progress, progress_json)
                     messages.info(request, 'passage added successfully')
         elif request.POST.get('res_type') == 'pdf':
             res_name = request.POST.get('name')

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block styles %}
@@ -74,7 +73,8 @@
         </section>
         <section class="quizes">
           {% for quiz in quizes %}
-          <a class="quiz_tab" href="{% url 'student_start_quiz_page' quiz.slug %}">
+          <a class="quiz_tab" style="background: var(--student-quiz);"
+            href="{% url 'student_start_quiz_page' quiz.slug %}">
             <i class="material-symbols-outlined">psychology_alt</i>
             <span>{{quiz}}</span>
             <small>{{quiz.duration}} mins.</small>

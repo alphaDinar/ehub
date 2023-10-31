@@ -77,12 +77,12 @@ def super_get_students(request,slug):
                 for progress in SchemeProgress.objects.filter(student=student):
                     scheme = Scheme.objects.get(id=progress.scheme.id)
                     progress.progress_json = []
-                    for image in scheme.get_images():
-                        progress.progress_json.append({'type':'image','id' : image.id, 'status' : 'pending'})
-                    for video in scheme.get_videos():
-                        progress.progress_json.append({'type':'video','id' : video.id, 'status' : 'pending'})
-                    for passage in scheme.get_passages():
-                        progress.progress_json.append({'type':'passage','id' : passage.id, 'status' : 'pending'})
+                    # for image in scheme.get_images():
+                    #     progress.progress_json.append({'type':'image','id' : image.id, 'status' : 'pending'})
+                    # for video in scheme.get_videos():
+                    #     progress.progress_json.append({'type':'video','id' : video.id, 'status' : 'pending'})
+                    # for passage in scheme.get_passages():
+                    #     progress.progress_json.append({'type':'passage','id' : passage.id, 'status' : 'pending'})
                     for slide in scheme.get_slides():
                         progress.progress_json.append({'type':'slide','id' : slide.id, 'status' : 'pending'})
                     progress.save()
@@ -146,14 +146,7 @@ def super_add(request , Staff, status):
                     staff.name = user
                     staff.password = request.POST.get('password')
                     staff.save()
-                    courseList = request.POST.getlist('courses')
-                    for course_obj in courseList:
-                        course = Course.objects.get(id=course_obj)
-                        if status == 'teacher':
-                            course.teacher = staff
-                        else:
-                            course.manager = staff
-                        course.save()
+                    staff.course.set(courseList)
                     messages.info(request, f'{user.username} Created successfully')
                 else:
                     messages.error(request, 'Select at least one Course')
@@ -162,25 +155,11 @@ def super_add(request , Staff, status):
             user = User.objects.get(username=request.POST.get('name'))
             user.username = request.POST.get('username')
             user.password = make_password(request.POST.get('password'))
-            # user.save()
+            user.save()
             staff = Staff.objects.get(name=user)
             staff.password = request.POST.get('password')
-            # staff.save()
-            for course in staff.get_courses():
-                if status == 'teacher':
-                    course.teacher = None
-                    course.save()
-                else:
-                    course.manager = None
-                    course.save()
-
-            for course_obj in courseList:
-                course = Course.objects.get(id=course_obj)
-                if status == 'teacher':
-                    course.teacher = staff
-                else:
-                    course.manager = staff
-                course.save()            
+            staff.save()
+            staff.course.set(courseList)          
             messages.success(request, f'{user} Updated successfully')
 
 @login_required

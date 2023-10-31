@@ -17,7 +17,7 @@
   transition: 0.4s ease;
   background: white;
   background: #0d0c22;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
 }
 
 .sideBar,.sideBar.change{

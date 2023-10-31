@@ -19,7 +19,7 @@
     <span>{{manager}}</span>
     <span>{{manager.password}}</span>
     <div class="course_list">
-      {% for course in manager.get_courses %}
+      {% for course in manager.course.all %}
       <small data-course="{{course.id}}">{{course}}</small>
       {% endfor %}
     </div>

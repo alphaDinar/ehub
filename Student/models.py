@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.text import slugify
 from Log.models import Student
 from Quiz.models import Quiz,Assignment
-from cloudinary.models import CloudinaryField
 from Course.models import Course
 from Scheme.models import Scheme
     
@@ -16,6 +15,8 @@ class SchemeProgress(models.Model):
     rating = models.IntegerField(default=0)
     def __str__(self):
         return f'{self.student}"s {self.scheme} progress'
+    class Meta:
+        verbose_name_plural = 'SchemeProgresses'
 
 class StudentReport(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE)

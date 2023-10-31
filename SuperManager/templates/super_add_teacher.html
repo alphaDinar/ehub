@@ -84,7 +84,7 @@
         <span>{{teacher}}</span>
         <span>{{teacher.password}}</span>
         <div class="course_list">
-          {% for course in teacher.get_courses %}
+          {% for course in teacher.course.all %}
           <small data-course="{{course.id}}">{{course}}</small>
           {% endfor %}
         </div>

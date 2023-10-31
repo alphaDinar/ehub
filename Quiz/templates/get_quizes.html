@@ -37,15 +37,25 @@
           <a href="{% url 'use_quiz_page' quiz.slug %}" class="scheme" style="text-align: center;">
             <i class="material-symbols-outlined">psychology_alt</i>
             <span style="text-align: center;">{{quiz.title}}</span>
+            <small class="q_count"></small>
             <p style="background: #acedc2;"></p>
             <small style="text-align: center;">{{quiz.duration}} mins.</small>
           </a>
           <a href="{% url 'set_quiz_page' quiz.slug %}" class="edit_scheme">
-            <i class="material-symbols-outlined">settings</i>
+            <i class="material-symbols-outlined">edit</i>
           </a>
         </div>
         {% endfor %}
       </div>
+
+      <script>
+        let q_count_list = JSON.parse('{{q_count_list}}')
+        const q_counts = document.querySelectorAll('.q_count')
+        q_counts.forEach((q_count,i)=>{
+          q_count.innerHTML = `${q_count_list[i]} que.`
+        })
+      </script>
+
     </section>
 
     <form class="add_quiz" method="post">

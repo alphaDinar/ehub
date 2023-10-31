@@ -21,20 +21,19 @@
     <nav data-progress_json="{{scheme_progress_json}}" data-progress_count="{{scheme_progress_count}}">
       <span><i class="material-symbols-outlined">slideshow</i> Slides <i
           class="material-symbols-outlined">chevron_right</i></span>
-      <!-- <p> -->
-      <div onclick="toggleTLM()" style="text-align: center; display: flex;align-items: center;"><i
+      <div onclick="toggleTLM()" class="s1" style="text-align: center; display: flex;align-items: center;"><i
           class="material-symbols-outlined">cast_for_education</i> Teacher Learning Materials <i
           class="material-symbols-outlined">chevron_right</i></div>
       <div class="tlm_con">
-        <span><i class="material-symbols-outlined">image</i> Images <i
+        <span class="s2"><i class="material-symbols-outlined">image</i> Images <i
+          class="material-symbols-outlined">chevron_right</i></span>
+        <span class="s2"><i class="material-symbols-outlined">videocam</i> Video <i
             class="material-symbols-outlined">chevron_right</i></span>
-        <span><i class="material-symbols-outlined">videocam</i> Video <i
+        <span class="s2"><i class="material-symbols-outlined">description</i> Passage <i
             class="material-symbols-outlined">chevron_right</i></span>
-        <span><i class="material-symbols-outlined">description</i> Passage <i
+        <span class="s2"><i class="material-symbols-outlined">picture_as_pdf</i> PDF <i
             class="material-symbols-outlined">chevron_right</i></span>
-        <span><i class="material-symbols-outlined">picture_as_pdf</i> PDF <i
-            class="material-symbols-outlined">chevron_right</i></span>
-        <span><i class="material-symbols-outlined">bookmark</i> Reference <i
+        <span class="s2"><i class="material-symbols-outlined">bookmark</i> Reference <i
             class="material-symbols-outlined">chevron_right</i></span>
       </div>
       <span><i class="material-symbols-outlined">history</i> Past resources <i
@@ -42,32 +41,66 @@
       <!-- </p> -->
     </nav>
     <style>
+      .sideBar{
+        box-shadow: none;
+        background: whitesmoke;
+      }
       .tlm_con {
-        display: none;
+        display: flex;
         flex-direction: column;
-        /* align-items: center; */
         cursor: pointer;
         gap: 0.5rem;
         position: relative;
       }
-
-      .sideBar nav span {
+      .sideBar nav{
+        width: 80%;
+        align-items: flex-start;
+      }
+      .sideBar nav span, .sideBar nav .s1 {
         display: flex;
         gap: 0 0.5rem;
         align-items: center;
+        background: #2A2A46;
+        color: white;
+        padding: 5px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .sideBar nav .s2{
+        background: rgb(84, 161, 238);
+        display: flex;
+        padding: 3px;
+        align-items: center;
+        gap: 0 0.3rem;
+        border: none;
+        border-radius: 3px;
+        color: white;
+        font-size: 0.8rem;
+      }
+      .scheme_progress nav small i{
+        font-size: 1rem;
+      }
+      .tlm_con{
+        position: relative;
+        top: -20px;
+        margin-left: 10px;
       }
 
       .tlm_con.change {
         display: flex;
       }
+      .res_edit_box_nav{
+        background: whitesmoke !important;
+        box-shadow: none;
+      }
     </style>
 
-    <script>
+    <!-- <script>
       const tlm_con = document.querySelector('.tlm_con')
       toggleTLM = () => {
         tlm_con.classList.toggle('change')
       }
-    </script>
+    </script> -->
 
     <section class="scheme_progress">
       <div class="progress_bar">

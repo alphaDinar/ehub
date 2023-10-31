@@ -47,9 +47,18 @@ def assignments(request,slug):
 
 def get_quizes(request,slug):
     scheme = Scheme.objects.get(slug=slug)
+    q_count_list = []
+    for quiz in scheme.get_quizes():
+        if len(quiz.con) > 0:
+            q_count =  len(json.loads(quiz.con))
+            q_count_list.append(q_count)
+        else:
+            q_count_list.append(0)    
+
     course = scheme.course
     if request.method == 'POST':
         title = request.POST.get('title').capitalize()
+        print(title)
         if not Quiz.objects.filter(topic=scheme).filter(title=title).exists():
             Quiz.objects.create(topic=scheme,title=title, course=scheme.course).save()
         else:
@@ -57,6 +66,7 @@ def get_quizes(request,slug):
     context ={
         'course' : course,
         'scheme' : scheme,
+        'q_count_list' : json.dumps(q_count_list)
     }
     return render(request, 'get_quizes.html', context)
 

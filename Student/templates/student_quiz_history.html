@@ -40,7 +40,12 @@
         <tr class="score" style="background: #2A2A46; color: white;">
           <td>Average </td>
           <td id="avg_mark_box"></td>
-          <td class="material-symbols-outlined">calculate</td>
+          <td style="text-align: center;">
+            <span class="material-symbols-outlined">calculate</span>
+          </td>
+          <td>
+            <a href="{% url 'student_start_quiz_page' quiz.slug %}" style="color: wheat;" class="material-symbols-outlined">ink_pen</a>
+          </td>
         </tr>
       </table>
 
